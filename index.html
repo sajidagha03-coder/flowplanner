@@ -487,6 +487,10 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       Projets
     </button>
+    <button class="tab-item" onclick="switchTab('settings')" id="tab-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Réglages
+    </button>
   </div>
 </div>
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
@@ -502,6 +506,29 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 const COLORS=['#FF3B30','#FF9500','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#32ADE6','#00C7BE','#A2845E'];
 
 function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+
+// ─── API KEY ──────────────────────────────────────────────────────────────
+function getApiKey(){return localStorage.getItem('pa_api_key')||'';}
+function saveApiKey(k){localStorage.setItem('pa_api_key',k.trim());}
+function hasApiKey(){return !!getApiKey();}
+
+async function callAI(messages, maxTokens=1000){
+  const key=getApiKey();
+  if(!key) throw new Error('CLE_MANQUANTE');
+  const res=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,messages})
+  });
+  const data=await res.json();
+  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+  return data.content?.[0]?.text||'';
+}
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
 let projects=load('fp_projects',[
@@ -648,13 +675,13 @@ function switchTab(tab){
   const el=document.getElementById('tab-'+tab);
   if(el) el.classList.add('active');
   // Show/hide header for home screen
-  document.getElementById('main-header').style.display=tab==='home'?'none':'flex';
+  document.getElementById('main-header').style.display=(tab==='home'||tab==='settings')?'none':'flex';
   render();
 }
 
 // ─── HEADER ──────────────────────────────────────────────────────────────
 function updateHeader(){
-  const titles={home:'Accueil',planning:'Planning',tasks:'Mes tâches',team:'Équipe',notes:'Notes',projects:'Projets'};
+  const titles={home:'Accueil',planning:'Planning',tasks:'Mes tâches',team:'Équipe',notes:'Notes',projects:'Projets',settings:'Réglages'};
   let title=titles[currentTab]||'Personal Assistant';
   let sub='';
   const aiBtn=document.getElementById('ai-btn');
@@ -711,6 +738,7 @@ function renderHome(){
     {tab:'team',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.314 2.686-6 6-6s6 2.686 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M15 20c0-2.761 1.343-5 3-5s3 2.239 3 5"/></svg>',label:'Équipe',color:'var(--brand)',bg:'var(--brand-light)'},
     {tab:'notes',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',label:'Notes',color:'var(--brand2)',bg:'var(--brand2-light)'},
     {tab:'projects',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',label:'Projets',color:'var(--brand2)',bg:'var(--brand2-light)'},
+    {tab:'settings',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',label:'Réglages',color:'var(--text2)',bg:'var(--bg3)'},
   ];
 
   let html=`
@@ -781,6 +809,106 @@ function renderHome(){
   document.getElementById('screen').innerHTML=html;
 }
 
+function renderSettings(){
+  const key=getApiKey();
+  const masked=key?'sk-ant-...'+key.slice(-6):'';
+  const isOk=!!key;
+  let html=`
+    <!-- Header block -->
+    <div style="background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%);padding:32px 24px 24px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">⚙️</div>
+      <div style="font-size:20px;font-weight:700;color:white;letter-spacing:-0.4px;">Réglages</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-top:4px;">Personal Assistant</div>
+    </div>
+
+    <!-- API Key section -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;" id="api-key-notice">Clé API Anthropic</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:12px;">
+          La clé API permet à l'IA d'analyser tes tâches et d'extraire les actions depuis tes notes. Elle est stockée <strong>uniquement sur cet appareil</strong>, jamais sur un serveur.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${isOk?'var(--green)':'var(--red)'};flex-shrink:0;"></div>
+          <div style="font-size:13px;color:${isOk?'var(--green-text)':'var(--red-text)'};">${isOk?'Clé configurée — '+masked:'Aucune clé configurée'}</div>
+        </div>
+        <input
+          class="form-input"
+          id="api-key-input"
+          type="password"
+          placeholder="sk-ant-api03-..."
+          value="${key}"
+          style="margin-bottom:10px;"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        />
+        <button class="btn-primary" onclick="saveApiKeyFromInput()" style="margin-top:0;">
+          💾 Enregistrer la clé
+        </button>
+        ${isOk?`<button class="btn-danger" onclick="clearApiKey()" style="margin-top:8px;">Supprimer la clé</button>`:''}
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+          👉 Obtenir une clé : <span style="color:var(--blue);text-decoration:underline;cursor:pointer;" onclick="window.open('https://console.anthropic.com/settings/keys','_blank')">console.anthropic.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- App info -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">À propos</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Application</span>
+        <span style="font-size:15px;color:var(--text2);">Personal Assistant</span>
+      </div>
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Version</span>
+        <span style="font-size:15px;color:var(--text2);">2.0</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Données</span>
+        <span style="font-size:15px;color:var(--text2);">Stockées localement</span>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Zone dangereuse</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 24px;overflow:hidden;">
+      <div style="padding:14px 16px;">
+        <button class="btn-danger" style="margin-top:0;" onclick="confirmReset()">🗑 Réinitialiser toutes les données</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('screen').innerHTML=html;
+}
+
+function saveApiKeyFromInput(){
+  const val=document.getElementById('api-key-input').value.trim();
+  if(!val||!val.startsWith('sk-')){
+    alert('Clé invalide — elle doit commencer par sk-ant-...');return;
+  }
+  saveApiKey(val);
+  // Show success feedback
+  const btn=document.querySelector('#screen .btn-primary');
+  if(btn){btn.textContent='✓ Clé enregistrée !';btn.style.background='var(--green)';}
+  setTimeout(()=>renderSettings(),1200);
+}
+
+function clearApiKey(){
+  if(confirm('Supprimer la clé API ?')){
+    localStorage.removeItem('pa_api_key');
+    renderSettings();
+  }
+}
+
+function confirmReset(){
+  if(confirm('Supprimer TOUTES les données (tâches, projets, membres) ? Cette action est irréversible.')){
+    ['fp_projects','fp_members','fp_tasks','fp_meetings','fp_ai','fp_nextid','fp_install_dismissed'].forEach(k=>localStorage.removeItem(k));
+    location.reload();
+  }
+}
+
 function render(){
   updateHeader();
   if(currentTab==='home') renderHome();
@@ -789,6 +917,7 @@ function render(){
   else if(currentTab==='team') renderTeam();
   else if(currentTab==='notes') renderNotes();
   else if(currentTab==='projects') renderProjects();
+  else if(currentTab==='settings') renderSettings();
 }
 
 // ─── PLANNING ────────────────────────────────────────────────────────────
@@ -1131,10 +1260,15 @@ function renderProjects(){
 
 // ─── AI ─────────────────────────────────────────────────────────────────
 async function triggerAI(){
+  if(!hasApiKey()){
+    aiResponse='';
+    switchTab('settings');
+    document.getElementById('api-key-notice')?.scrollIntoView({behavior:'smooth'});
+    return;
+  }
   const active=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
   if(!active.length) return;
-  aiResponse='';render();
-  // show loading
+  aiResponse='⏳';render();
   const panel=document.querySelector('.ai-panel');
   if(panel) panel.querySelector('.ai-text').innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
 
@@ -1148,14 +1282,13 @@ async function triggerAI(){
     .map(t=>`"${t.title}" (${memberById(t.assignedTo).name}) retard ${Math.abs(daysDiff(t.deadline))}j`).join(', ');
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
-        messages:[{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nDonne un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, et une alerte si quelque chose risque de lui échapper. Tutoie-le. Direct et actionnable.`}]})
-    });
-    const data=await res.json();
-    aiResponse=data.content?.[0]?.text||'Impossible d\'analyser.';
-  }catch(e){aiResponse='Erreur de connexion.';}
+    const text=await callAI([{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nDonne un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, et une alerte si quelque chose risque de lui échapper. Tutoie-le. Direct et actionnable.`}],800);
+    aiResponse=text||'Impossible d\'analyser.';
+  }catch(e){
+    console.error('AI error:',e);
+    if(e.message==='CLE_MANQUANTE'){aiResponse='';switchTab('settings');return;}
+    aiResponse='Erreur: '+(e.message||'connexion échouée');
+  }
   saveAll();render();
 }
 
@@ -1170,13 +1303,7 @@ async function processFollowup(){
   const projectList=projects.map(p=>`${p.id}:${p.name}`).join(', ');
 
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,
-        messages:[{role:'user',content:`Extrait toutes les tâches à faire depuis ce texte. Membres: moi="me", ${memberList}. Projets: ${projectList}.\n\nRéponds UNIQUEMENT avec un tableau JSON valide, sans markdown, sans backticks, sans texte avant ou après. Chaque objet: {"title":"...","projectId":"...","priority":"critical|high|medium|low","deadline":"YYYY-MM-DD","duration":60,"callOk":false,"assignedTo":"me ou id_membre"}. Deadline depuis aujourd'hui ${todayStr()}.\n\nTexte:\n${input}`}]})
-    });
-    const data=await res.json();
-    let text=(data.content?.[0]?.text||'').trim();
+    let text=(await callAI([{role:'user',content:`Extrait toutes les tâches à faire depuis ce texte. Membres: moi="me", ${memberList}. Projets: ${projectList}.\n\nRéponds UNIQUEMENT avec un tableau JSON valide, sans markdown, sans backticks, sans texte avant ou après. Chaque objet: {"title":"...","projectId":"...","priority":"critical|high|medium|low","deadline":"YYYY-MM-DD","duration":60,"callOk":false,"assignedTo":"me ou id_membre"}. Deadline depuis aujourd'hui ${todayStr()}.\n\nTexte:\n${input}`}],1500)).trim();
     // Strip any markdown fences
     text=text.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
     // Find JSON array
@@ -1203,8 +1330,12 @@ async function processFollowup(){
     re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);">✓ ${extracted.length} tâche(s) créées et planifiées automatiquement !</div>`;
     setTimeout(()=>{document.getElementById('fu-input').value='';render();},1500);
   }catch(e){
-    console.error(e);
-    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">Erreur lors de l'extraction. Réessaie.</div>`;
+    console.error('Followup error:',e);
+    if(e.message==='CLE_MANQUANTE'){
+      re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">🔑 Clé API manquante — configure-la dans <strong>Réglages</strong>.</div>`;
+      return;
+    }
+    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">Erreur: ${e.message||'Connexion échouée'}.</div>`;
   }
 }
 
