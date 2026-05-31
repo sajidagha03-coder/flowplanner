@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Personal Assistant"/>
+<meta name="theme-color" content="#1A3A6B"/>
+<title>Personal Assistant</title>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="apple-touch-icon.png"/>
+<link rel="apple-touch-startup-image" href="apple-touch-icon.png"/>
+<style>
+:root {
+  /* Personal Assistant — Blue Navy + Bordeaux palette */
+  --brand:#1A3A6B;        /* deep navy blue — primary */
+  --brand2:#8B1A3A;       /* bordeaux — accent */
+  --brand-light:#EBF0F8;  /* brand tint bg */
+  --brand2-light:#F8EAEE; /* bordeaux tint bg */
+
+  --bg:#F0F2F6;--bg-card:#ffffff;--bg2:#F0F2F6;--bg3:#DDE1EA;
+  --text:#0D1B2E;--text2:#5A6478;--text3:#9BA5B4;
+  --border:rgba(26,58,107,0.14);--border-inner:rgba(26,58,107,0.09);
+
+  /* Map system colors to brand */
+  --blue:#1A3A6B;--blue-bg:#EBF0F8;--blue-text:#1A3A6B;
+  --green:#1E7B4B;--green-bg:#E6F5EE;--green-text:#1E7B4B;
+  --red:#8B1A3A;--red-bg:#F8EAEE;--red-text:#8B1A3A;
+  --orange:#B85C00;--orange-bg:#FDF0E4;--orange-text:#B85C00;
+  --purple:#5B2D8E;--purple-bg:#F0EAFA;--purple-text:#5B2D8E;
+  --teal:#0E6E8C;--teal-bg:#E4F3F8;--teal-text:#0E6E8C;
+  --indigo:#2D3A8C;
+
+  --radius:12px;--radius-sm:10px;--radius-xs:8px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --tab-h:49px;
+}
+@media (prefers-color-scheme:dark){:root{
+  --brand:#4A7BC4;--brand2:#C45A7A;
+  --brand-light:#0D1F3A;--brand2-light:#2E0A18;
+
+  --bg:#0A0E18;--bg-card:#141928;--bg2:#141928;--bg3:#1E2640;
+  --text:#E8EDF5;--text2:#8A95AA;--text3:#4A5570;
+  --border:rgba(74,123,196,0.22);--border-inner:rgba(74,123,196,0.12);
+
+  --blue:#4A7BC4;--blue-bg:#0D1F3A;--blue-text:#7AAEE8;
+  --green:#30C878;--green-bg:#0A2818;--green-text:#5AE090;
+  --red:#C45A7A;--red-bg:#2E0A18;--red-text:#E08AA0;
+  --orange:#E08030;--orange-bg:#2A1800;--orange-text:#F0A860;
+  --purple:#9060D0;--purple-bg:#1A0A30;--purple-text:#B890E8;
+  --teal:#30A8D0;--teal-bg:#001828;--teal-text:#60C8E8;
+  --indigo:#6070D0;
+}}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text',system-ui,sans-serif;}
+body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+/* ── APP SHELL ── */
+.app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);}
+
+/* ── NAVIGATION BAR (iOS style large title) ── */
+.header{
+  background:rgba(240,242,246,0.90);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-bottom:0.5px solid var(--border);
+  padding:10px 16px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;position:relative;z-index:5;
+}
+@media (prefers-color-scheme:dark){
+  .header{background:rgba(0,0,0,0.82);}
+}
+.header-left{display:flex;flex-direction:column;gap:1px;}
+.header-title{font-size:17px;font-weight:600;letter-spacing:-0.4px;line-height:1.2;}
+.header-sub{font-size:12px;color:var(--text2);letter-spacing:-0.1px;}
+.header-right{display:flex;gap:8px;align-items:center;}
+.icon-btn{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--blue-bg);border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;color:var(--blue);transition:opacity 0.15s;
+}
+.icon-btn:active{opacity:0.5;}
+.back-btn{display:flex;align-items:center;gap:3px;font-size:16px;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;font-family:inherit;}
+
+/* ── SCROLL AREA ── */
+.screen{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding-bottom:calc(var(--tab-h) + var(--safe-bottom) + 16px);
+}
+
+/* ── TAB BAR (iOS exact) ── */
+.tabbar{
+  height:calc(var(--tab-h) + var(--safe-bottom));
+  padding-bottom:var(--safe-bottom);
+  background:rgba(240,242,246,0.95);
+  -webkit-backdrop-filter:blur(20px) saturate(180%);
+  backdrop-filter:blur(20px) saturate(180%);
+  border-top:0.5px solid var(--border);
+  display:flex;align-items:flex-start;padding-top:4px;
+  flex-shrink:0;z-index:10;
+}
+@media (prefers-color-scheme:dark){.tabbar{background:rgba(0,0,0,0.88);}}
+.tab-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:2px;cursor:pointer;border:none;background:transparent;
+  color:var(--text3);font-size:10px;font-weight:500;
+  letter-spacing:-0.2px;transition:color 0.12s;
+  padding:0;
+}
+.tab-item.active{color:var(--blue);}
+.tab-icon{width:26px;height:26px;display:flex;align-items:center;justify-content:center;}
+.tab-item svg{width:24px;height:24px;stroke-width:1.6;}
+/* Active tab: filled icon feel */
+.tab-item.active svg{stroke-width:2;}
+
+/* ── SECTION HEADER (iOS grouped style) ── */
+.sec-hdr{
+  padding:22px 20px 6px;
+  font-size:13px;font-weight:400;
+  color:var(--text2);
+  letter-spacing:-0.1px;
+}
+.sec-hdr-large{
+  padding:16px 20px 8px;
+  font-size:22px;font-weight:700;
+  color:var(--text);letter-spacing:-0.5px;
+}
+
+/* ── GROUPED CARD (iOS Inset Grouped) ── */
+.ios-card{
+  background:var(--bg-card);
+  border-radius:var(--radius);
+  margin:0 16px 8px;
+  overflow:hidden;
+}
+/* Each row inside a card */
+.ios-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;
+  border-bottom:0.5px solid var(--border-inner);
+  min-height:44px;cursor:pointer;
+  background:var(--bg-card);transition:background 0.1s;
+}
+.ios-row:last-child{border-bottom:none;}
+.ios-row:active{background:var(--bg2);}
+.row-label{flex:1;font-size:17px;letter-spacing:-0.2px;}
+.row-label-sm{flex:1;font-size:15px;color:var(--text2);}
+.row-value{font-size:17px;color:var(--text2);}
+.row-chevron{color:var(--text3);font-size:17px;font-weight:400;margin-left:-4px;}
+.row-icon-wrap{
+  width:29px;height:29px;border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+
+/* ── SEGMENTED CONTROL ── */
+.seg-ctrl{
+  display:flex;background:var(--bg3);
+  border-radius:9px;padding:2px;
+  margin:12px 16px 0;
+}
+.seg-btn{
+  flex:1;padding:6px;font-size:13px;font-weight:500;
+  border:none;border-radius:8px;background:transparent;
+  color:var(--text2);cursor:pointer;transition:all 0.15s;
+  letter-spacing:-0.2px;font-family:inherit;
+}
+.seg-btn.active{
+  background:var(--bg-card);color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,0.14),0 0 0 0.5px rgba(0,0,0,0.06);
+}
+
+/* ── TIMELINE ── */
+.tl-block{margin:8px 16px;border-radius:var(--radius);overflow:hidden;background:var(--bg-card);}
+.tl-row{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:11px 16px;
+  border-bottom:0.5px solid var(--border-inner);
+}
+.tl-row:last-child{border-bottom:none;}
+.tl-time{
+  font-size:12px;color:var(--text3);
+  width:44px;flex-shrink:0;padding-top:2px;
+  font-variant-numeric:tabular-nums;letter-spacing:-0.2px;
+}
+.tl-dot{
+  width:10px;height:10px;border-radius:50%;
+  flex-shrink:0;margin-top:4px;
+}
+.tl-content{flex:1;min-width:0;padding-right:4px;}
+.tl-name{font-size:15px;font-weight:500;line-height:1.3;letter-spacing:-0.2px;}
+.tl-sub{font-size:13px;color:var(--text2);margin-top:2px;letter-spacing:-0.1px;}
+.tl-del{color:var(--text3);font-size:22px;cursor:pointer;padding:0 4px;line-height:1;flex-shrink:0;}
+.tl-empty{padding:14px 16px;font-size:15px;color:var(--text3);letter-spacing:-0.2px;}
+
+/* ── TASK CARD (new airy design) ── */
+.task-card{
+  background:var(--bg-card);
+  border-radius:var(--radius);
+  margin:0 16px 10px;
+  overflow:hidden;
+  /* Left accent border via box-shadow */
+}
+.task-card.p-critical{box-shadow:inset 4px 0 0 var(--red);}
+.task-card.p-high{box-shadow:inset 4px 0 0 var(--orange);}
+.task-card.p-medium{box-shadow:inset 4px 0 0 var(--blue);}
+.task-card.p-low{box-shadow:inset 4px 0 0 var(--green));}
+
+.task-top{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:14px 14px 10px 18px;
+}
+.task-check{
+  width:24px;height:24px;border-radius:50%;
+  border:2px solid var(--border);
+  background:transparent;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.15s;margin-top:1px;
+}
+.task-check.done{background:var(--green);border-color:var(--green);}
+.task-check svg{width:13px;height:13px;stroke:white;stroke-width:2.5;display:none;}
+.task-check.done svg{display:block;}
+.task-main{flex:1;min-width:0;}
+.task-title{
+  font-size:16px;font-weight:500;line-height:1.35;
+  letter-spacing:-0.3px;margin-bottom:6px;
+}
+.task-title.done{text-decoration:line-through;color:var(--text3);}
+/* Priority label inline */
+.p-label{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:500;
+  padding:2px 8px;border-radius:20px;
+  letter-spacing:-0.1px;
+}
+.p-label.critical{background:var(--red-bg);color:var(--red);}
+.p-label.high{background:var(--orange-bg);color:var(--orange);}
+.p-label.medium{background:var(--blue-bg);color:var(--blue);}
+.p-label.low{background:var(--green-bg);color:var(--green);}
+
+/* Tags row */
+.task-tags{
+  display:flex;flex-wrap:wrap;gap:5px;
+  padding:0 14px 10px 18px;
+}
+.tag{
+  font-size:12px;padding:3px 9px;border-radius:20px;
+  background:var(--bg2);color:var(--text2);
+  white-space:nowrap;letter-spacing:-0.1px;
+}
+.tag.overdue{background:var(--red-bg);color:var(--red-text);font-weight:500;}
+.tag.today{background:var(--orange-bg);color:var(--orange-text);font-weight:500;}
+.tag.soon{background:var(--blue-bg);color:var(--blue-text);}
+.tag.slot-free{background:var(--green-bg);color:var(--green-text);}
+.tag.slot-drive{background:var(--orange-bg);color:var(--orange-text);}
+.tag.slot-low{background:var(--teal-bg);color:var(--teal-text);}
+.tag.slot-none{background:var(--red-bg);color:var(--red-text);}
+.tag.team-tag{background:var(--purple-bg);color:var(--purple-text);}
+
+/* Status buttons */
+.task-actions{
+  display:flex;gap:1px;
+  border-top:0.5px solid var(--border-inner);
+}
+.act-btn{
+  flex:1;padding:10px 4px;font-size:12px;font-weight:500;
+  border:none;background:var(--bg2);color:var(--text2);
+  cursor:pointer;text-align:center;letter-spacing:-0.1px;
+  transition:background 0.12s;
+}
+.act-btn:first-child{border-radius:0 0 0 var(--radius);}
+.act-btn:last-child{border-radius:0 0 var(--radius) 0;}
+.act-btn:active{opacity:0.7;}
+.act-btn.s-done{background:var(--green-bg);color:var(--green-text);}
+.act-btn.s-defer{background:var(--orange-bg);color:var(--orange-text);}
+.act-btn.s-more{background:var(--blue-bg);color:var(--blue-text);}
+
+/* ── STATS ROW ── */
+.stat-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:8px;padding:12px 16px 4px;
+}
+.stat-card{
+  background:var(--bg-card);border-radius:var(--radius-sm);
+  padding:12px 8px;text-align:center;
+}
+.stat-val{font-size:24px;font-weight:700;line-height:1;letter-spacing:-0.5px;}
+.stat-lbl{font-size:10px;color:var(--text2);margin-top:3px;line-height:1.2;letter-spacing:-0.1px;}
+.stat-val.red{color:var(--red);}.stat-val.orange{color:var(--orange);}
+.stat-val.green{color:var(--green);}.stat-val.blue{color:var(--blue);}
+
+/* ── FILTER CHIPS ── */
+.chips{
+  display:flex;gap:7px;padding:10px 16px 4px;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.chips::-webkit-scrollbar{display:none;}
+.chip{
+  padding:5px 13px;font-size:13px;font-weight:500;
+  border-radius:20px;border:0.5px solid var(--border);
+  background:var(--bg-card);color:var(--text2);
+  white-space:nowrap;cursor:pointer;flex-shrink:0;
+  letter-spacing:-0.2px;transition:all 0.12s;
+}
+.chip.active{background:var(--blue);color:white;border-color:transparent;}
+
+/* ── AI PANEL ── */
+.ai-panel{
+  margin:0 16px 10px;
+  background:var(--blue-bg);border-radius:var(--radius);
+  padding:14px 16px;
+}
+.ai-title{font-size:12px;font-weight:600;color:var(--blue-text);margin-bottom:6px;letter-spacing:-0.1px;}
+.ai-text{font-size:14px;line-height:1.65;color:var(--text);white-space:pre-wrap;letter-spacing:-0.1px;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:pp 1.2s infinite;display:inline-block;margin:0 2px;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes pp{0%,80%,100%{opacity:.2}40%{opacity:1}}
+
+/* ── MEMBER ── */
+.member-card{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;
+  border-bottom:0.5px solid var(--border-inner);
+  cursor:pointer;background:var(--bg-card);transition:background 0.1s;
+}
+.member-card:last-child{border-bottom:none;}
+.member-card:active{background:var(--bg2);}
+.avatar{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:600;flex-shrink:0;letter-spacing:-0.3px;
+}
+.member-name{font-size:16px;font-weight:500;letter-spacing:-0.3px;}
+.member-meta{font-size:13px;color:var(--text2);margin-top:2px;}
+.alert-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:var(--red-bg);color:var(--red-text);font-weight:500;}
+
+/* ── PROJECTS ── */
+.proj-card{
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;
+  border-bottom:0.5px solid var(--border-inner);
+  cursor:pointer;transition:background 0.1s;
+}
+.proj-card:last-child{border-bottom:none;}
+.proj-card:active{background:var(--bg2);}
+.proj-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.proj-name{font-size:16px;font-weight:500;letter-spacing:-0.3px;}
+.proj-meta{font-size:13px;color:var(--text2);margin-top:2px;}
+
+/* ── NOTES ── */
+.fu-box{
+  margin:8px 16px;background:var(--bg-card);
+  border-radius:var(--radius);overflow:hidden;
+}
+.fu-textarea{
+  width:100%;padding:14px 16px;font-size:16px;
+  border:none;background:transparent;color:var(--text);
+  font-family:inherit;resize:none;outline:none;min-height:110px;
+  letter-spacing:-0.2px;line-height:1.5;
+}
+.fu-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;border-top:0.5px solid var(--border-inner);
+}
+.fu-hint{font-size:13px;color:var(--text3);}
+.fu-btn{
+  padding:8px 18px;font-size:14px;font-weight:600;
+  border:none;border-radius:var(--radius-sm);
+  background:var(--blue);color:white;cursor:pointer;
+  letter-spacing:-0.2px;font-family:inherit;
+}
+.fu-btn:active{opacity:0.75;}
+
+/* ── BOTTOM SHEET ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.4);
+  z-index:100;display:flex;align-items:flex-end;
+  opacity:0;transition:opacity 0.22s;pointer-events:none;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+.sheet{
+  background:var(--bg-card);border-radius:20px 20px 0 0;
+  padding:0 0 calc(24px + var(--safe-bottom));width:100%;
+  max-height:92vh;overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+}
+.overlay.open .sheet{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bg3);margin:10px auto 14px;}
+.sheet-title{font-size:17px;font-weight:600;padding:0 16px 12px;border-bottom:0.5px solid var(--border-inner);letter-spacing:-0.3px;}
+.sheet-body{padding:16px;}
+.form-field{margin-bottom:16px;}
+.form-label{font-size:13px;font-weight:500;color:var(--text2);margin-bottom:6px;letter-spacing:-0.1px;display:block;}
+.form-input{
+  width:100%;padding:12px 14px;font-size:16px;
+  border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg2);color:var(--text);font-family:inherit;
+  outline:none;-webkit-appearance:none;letter-spacing:-0.2px;
+}
+.form-input:focus{border-color:var(--blue);}
+.form-select{
+  width:100%;padding:12px 14px;font-size:16px;
+  border:0.5px solid var(--border);border-radius:var(--radius-sm);
+  background:var(--bg2);color:var(--text);font-family:inherit;
+  outline:none;-webkit-appearance:none;
+}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.btn-primary{
+  width:100%;padding:15px;font-size:16px;font-weight:600;
+  border:none;border-radius:var(--radius);background:var(--blue);
+  color:white;cursor:pointer;margin-top:4px;letter-spacing:-0.3px;
+  font-family:inherit;
+}
+.btn-primary:active{opacity:0.8;}
+.btn-danger{
+  width:100%;padding:14px;font-size:16px;font-weight:500;
+  border:none;border-radius:var(--radius);
+  background:var(--red-bg);color:var(--red);cursor:pointer;
+  margin-top:10px;font-family:inherit;
+}
+.btn-secondary{
+  width:100%;padding:14px;font-size:16px;font-weight:500;
+  border:0.5px solid var(--border);border-radius:var(--radius);
+  background:transparent;color:var(--text);cursor:pointer;
+  margin-top:10px;font-family:inherit;
+}
+.color-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform 0.12s;}
+.color-swatch.selected{border-color:var(--text);transform:scale(1.15);}
+
+/* ── MISC ── */
+.empty{text-align:center;padding:56px 24px;color:var(--text2);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty-title{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px;letter-spacing:-0.3px;}
+.empty-sub{font-size:15px;line-height:1.5;letter-spacing:-0.2px;}
+.ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.install-banner{
+  margin:8px 16px 0;background:var(--blue-bg);
+  border-radius:var(--radius);padding:11px 14px;
+  display:flex;align-items:center;gap:10px;
+}
+.install-text{flex:1;font-size:13px;color:var(--blue-text);line-height:1.4;letter-spacing:-0.1px;}
+.install-close{font-size:22px;color:var(--text3);cursor:pointer;padding:2px 4px;line-height:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header" id="main-header" style="display:none;">
+    <div class="header-left">
+      <div class="header-title" id="header-title">Personal Assistant</div>
+      <div class="header-sub" id="header-sub"></div>
+    </div>
+    <div class="header-right" id="header-right">
+      <button class="icon-btn" id="ai-btn" onclick="triggerAI()" style="display:none" title="IA">🧠</button>
+      <button class="icon-btn" id="add-btn" onclick="openAddModal()" style="display:none" title="Ajouter">＋</button>
+    </div>
+  </div>
+  <div class="screen" id="screen"></div>
+  <div class="tabbar" id="tabbar">
+    <button class="tab-item active" onclick="switchTab('home')" id="tab-home">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Accueil
+    </button>
+    <button class="tab-item" onclick="switchTab('planning')" id="tab-planning">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Planning
+    </button>
+    <button class="tab-item" onclick="switchTab('tasks')" id="tab-tasks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+      Tâches
+    </button>
+    <button class="tab-item" onclick="switchTab('team')" id="tab-team">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.314 2.686-6 6-6s6 2.686 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M15 20c0-2.761 1.343-5 3-5s3 2.239 3 5"/></svg>
+      Équipe
+    </button>
+    <button class="tab-item" onclick="switchTab('notes')" id="tab-notes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Notes
+    </button>
+    <button class="tab-item" onclick="switchTab('projects')" id="tab-projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      Projets
+    </button>
+    <button class="tab-item" onclick="switchTab('settings')" id="tab-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Réglages
+    </button>
+  </div>
+</div>
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-title"></div>
+    <div class="sheet-body" id="sheet-body"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const COLORS=['#FF3B30','#FF9500','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#32ADE6','#00C7BE','#A2845E'];
+
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+
+// ─── API KEY ──────────────────────────────────────────────────────────────
+function getApiKey(){return localStorage.getItem('pa_api_key')||'';}
+function saveApiKey(k){localStorage.setItem('pa_api_key',k.trim());}
+function hasApiKey(){return !!getApiKey();}
+
+// Models to try in order — most recent first
+const AI_MODELS=[
+  'claude-haiku-4-5-20251001',
+  'claude-haiku-4-5',
+  'claude-3-5-haiku-20241022',
+  'claude-3-haiku-20240307',
+];
+let _workingModel=localStorage.getItem('pa_working_model')||null;
+
+async function callAI(messages, maxTokens=1000){
+  const key=getApiKey();
+  if(!key) throw new Error('CLE_MANQUANTE');
+
+  // If we already found a working model, use it directly
+  const modelsToTry=_workingModel?[_workingModel]:AI_MODELS;
+
+  for(const model of modelsToTry){
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model,max_tokens:maxTokens,messages})
+    });
+    const raw=await res.text();
+    let data;
+    try{data=JSON.parse(raw);}catch(e){continue;}
+    // If model not found or invalid, try next
+    if(data.error?.type==='not_found_error'||data.error?.message?.includes('model')){
+      console.warn('Model not available:',model);
+      continue;
+    }
+    if(!res.ok||data.error){
+      const msg=data.error?.message||data.error?.type||JSON.stringify(data).slice(0,200);
+      throw new Error('API '+res.status+': '+msg);
+    }
+    // Success — remember this model
+    if(_workingModel!==model){
+      _workingModel=model;
+      localStorage.setItem('pa_working_model',model);
+      console.log('Working model found:',model);
+    }
+    return data.content?.[0]?.text||'';
+  }
+  throw new Error('Aucun modèle IA disponible. Vérifie ta clé API dans Réglages.');
+}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+let projects=load('fp_projects',[
+  {id:'p1',name:'LevéeFonds',color:'#007AFF'},
+  {id:'p2',name:'TechOps',color:'#5856D6'},
+  {id:'p3',name:'Marketing',color:'#FF9500'},
+  {id:'p4',name:'Finance',color:'#34C759'},
+  {id:'p5',name:'Produit',color:'#AF52DE'},
+]);
+let members=load('fp_members',[
+  {id:'m1',name:'Sophie Martin',initials:'SM',color:'#FF2D55'},
+  {id:'m2',name:'Lucas Bernard',initials:'LB',color:'#5856D6'},
+  {id:'m3',name:'Camille Dupont',initials:'CD',color:'#FF9500'},
+]);
+let tasks=load('fp_tasks',[
+  {id:'t1',title:"Préparer deck investisseurs Q3",projectId:'p1',priority:"critical",deadline:"2026-06-02",duration:180,done:false,notes:"Slides, financials, story",callOk:false,assignedTo:'me',status:'todo'},
+  {id:'t2',title:"Valider contrat prestataire dev",projectId:'p2',priority:"high",deadline:"2026-06-04",duration:45,done:false,notes:"Relire clauses IP",callOk:false,assignedTo:'me',status:'todo'},
+  {id:'t3',title:"Call équipe marketing",projectId:'p3',priority:"medium",deadline:"2026-06-03",duration:60,done:false,notes:"",callOk:true,assignedTo:'me',status:'todo'},
+  {id:'t4',title:"Envoyer factures en attente",projectId:'p4',priority:"high",deadline:"2026-06-01",duration:30,done:false,notes:"Clients: Acme, BetaCo",callOk:false,assignedTo:'me',status:'todo'},
+  {id:'t5',title:"Review code release v2.1",projectId:'p2',priority:"medium",deadline:"2026-06-06",duration:90,done:false,notes:"",callOk:false,assignedTo:'m2',status:'todo'},
+  {id:'t6',title:"Mise à jour roadmap produit",projectId:'p5',priority:"low",deadline:"2026-06-10",duration:120,done:false,notes:"",callOk:false,assignedTo:'me',status:'todo'},
+  {id:'t7',title:"Brief campagne été",projectId:'p3',priority:"medium",deadline:"2026-06-05",duration:60,done:false,notes:"",callOk:false,assignedTo:'m1',status:'todo'},
+  {id:'t8',title:"Relancer prospect Eurotech",projectId:'p1',priority:"high",deadline:"2026-06-02",duration:20,done:false,notes:"",callOk:true,assignedTo:'me',status:'todo'},
+]);
+let adHocMeetings=load('fp_meetings',[]);
+let aiResponse=load('fp_ai','');
+let nextId=load('fp_nextid',200);
+let currentTab='home';
+let planningView='day'; // 'day' | 'week'
+let filterPriority='all';
+let filterProject='all';
+let filterAssignee='all';
+let viewingMemberId=null;
+let showInstall=!load('fp_install_dismissed',false);
+
+function saveAll(){
+  save('fp_projects',projects);save('fp_members',members);save('fp_tasks',tasks);
+  save('fp_meetings',adHocMeetings);save('fp_ai',aiResponse);save('fp_nextid',nextId);
+}
+function genId(){return 'id'+(nextId++);}
+
+// ─── DATE/SCHEDULE ENGINE ─────────────────────────────────────────────────
+const TODAY=new Date(2026,4,31);TODAY.setHours(0,0,0,0);
+function todayStr(){return '2026-05-31';}
+// Real current datetime for slot scheduling
+function realNow(){return new Date();}
+function realTodayMidnight(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function daysDiff(ds){return Math.round((new Date(ds)-TODAY)/86400000);}
+function fmtDate(ds){
+  // Always show full date: "lun. 2 juin"
+  const d=new Date(ds);
+  const diff=daysDiff(ds);
+  const weekdays=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const months=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+  const wd=weekdays[d.getDay()];
+  const day=d.getDate();
+  const mo=months[d.getMonth()];
+  let prefix='';
+  if(diff<0) prefix='⚠ ';
+  else if(diff===0) prefix='🔴 ';
+  else if(diff===1) prefix='🟡 ';
+  return `${prefix}${wd} ${day} ${mo}`;
+}
+function deadlineCls(ds){
+  const d=daysDiff(ds);
+  if(d<0) return 'overdue';
+  if(d===0) return 'today';
+  if(d<=2) return 'soon';
+  return '';
+}
+
+const BASE_WEEK={
+  1:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:9.5,t:'free'},{s:9.5,e:13,t:'busy'},{s:13,e:13.5,t:'drive'},{s:13.5,e:14.5,t:'busy'},{s:14.5,e:20,t:'free'},{s:20,e:24,t:'busy'}]},
+  2:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:18.5,t:'free'},{s:18.5,e:19.5,t:'drive'},{s:19.5,e:24,t:'busy'}]},
+  3:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:19.5,t:'free'},{s:19.5,e:24,t:'busy'}]},
+  4:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:10.5,t:'free'},{s:10.5,e:12,t:'busy'},{s:12,e:18,t:'free'},{s:18,e:20,t:'busy'},{s:20,e:24,t:'busy'}]},
+  5:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:13,t:'free'},{s:13,e:19,t:'low'},{s:19,e:20,t:'drive'},{s:20,e:24,t:'busy'}]},
+  6:{slots:[{s:9,e:9.5,t:'free'},{s:9.5,e:13,t:'busy'},{s:13,e:24,t:'low'}]},
+  0:{slots:[{s:9,e:9.5,t:'free'},{s:9.5,e:10.75,t:'drive'},{s:10.75,e:13.5,t:'free'},{s:13.5,e:24,t:'busy'}]},
+};
+
+function getDateSlots(date){
+  const dow=date.getDay();
+  const base=JSON.parse(JSON.stringify(BASE_WEEK[dow]?.slots||[]));
+  const dStr=date.toISOString().slice(0,10);
+  adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+    const mS=m.start,mE=m.end;
+    const out=[];
+    base.forEach(sl=>{
+      if(sl.e<=mS||sl.s>=mE){out.push(sl);return;}
+      if(sl.s<mS) out.push({s:sl.s,e:mS,t:sl.t});
+      out.push({s:mS,e:mE,t:'busy'});
+      if(sl.e>mE) out.push({s:mE,e:sl.e,t:sl.t});
+    });
+    base.length=0;out.forEach(s=>base.push(s));
+  });
+  // merge consecutive same-type slots & sort
+  base.sort((a,b)=>a.s-b.s);
+  return base;
+}
+
+function findBestSlot(task,startOffset=0){
+  // Use real wall-clock time — never the fixed TODAY constant
+  const nowDate=new Date(); // real system time on the device
+  const currentHour=nowDate.getHours()+nowDate.getMinutes()/60;
+  // Real calendar today at midnight (device time)
+  const realTodayMs=new Date(nowDate.getFullYear(),nowDate.getMonth(),nowDate.getDate()).getTime();
+
+  for(let di=startOffset;di<14;di++){
+    const d=new Date(TODAY);d.setDate(d.getDate()+di);
+    // Compare timestamps at midnight — bulletproof regardless of timezones
+    const dMs=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+    const isToday=(dMs===realTodayMs);
+    // isPast = this day is before today on the device calendar
+    if(dMs<realTodayMs) continue;
+
+    const slots=getDateSlots(d);
+    const dur=task.duration/60;
+    const needsFocus=['critical','high'].includes(task.priority);
+
+    for(const sl of slots){
+      if(sl.t==='busy') continue;
+
+      let slotStart=sl.s;
+      if(isToday){
+        // Skip if slot already fully ended (add 5min buffer)
+        if(sl.e<=currentHour+0.083) continue;
+        // Trim slot start to current time if slot is ongoing
+        if(sl.s<currentHour+0.083){
+          // Round up to next 15min increment
+          slotStart=Math.ceil((currentHour+0.083)*4)/4;
+        }
+      }
+
+      const len=sl.e-slotStart;
+      if(len<dur) continue;
+      if(sl.t==='drive'){
+        if(task.callOk) return {day:d,start:slotStart,end:slotStart+dur,type:'drive'};
+        continue;
+      }
+      if(sl.t==='low'&&needsFocus) continue;
+      return {day:d,start:slotStart,end:slotStart+dur,type:sl.t};
+    }
+  }
+  return null;
+}
+
+function fmtH(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return `${String(hh).padStart(2,'0')}h${mm?String(mm).padStart(2,'0'):''}`;}
+function fmtDur(m){return m>=60?Math.floor(m/60)+'h'+(m%60?m%60+'m':''):m+'min';}
+function fmtSlotPill(slot){
+  if(!slot) return {label:'Aucun créneau',cls:'slot-none'};
+  const isToday=slot.day.toDateString()===TODAY.toDateString();
+  const tom=new Date(TODAY);tom.setDate(tom.getDate()+1);
+  const isTom=slot.day.toDateString()===tom.toDateString();
+  const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const dayStr=isToday?'Auj.':isTom?'Dem.':days[slot.day.getDay()];
+  const suffix=slot.type==='drive'?' 🚗':slot.type==='low'?' (dispo)':'';
+  return {label:`${dayStr} ${fmtH(slot.start)}${suffix}`,cls:slot.type==='drive'?'slot-drive':slot.type==='low'?'slot-low':'slot-free'};
+}
+function score(t){
+  const u={critical:4,high:3,medium:2,low:1}[t.priority];
+  const d=daysDiff(t.deadline);
+  const ds=d<0?10:d===0?8:d<=2?6:d<=5?3:1;
+  return u*2+ds;
+}
+function projById(id){return projects.find(p=>p.id===id)||{name:'?',color:'#aaa'};}
+function memberById(id){return id==='me'?{name:'Moi',initials:'Moi',color:'#007AFF'}:members.find(m=>m.id===id)||{name:'?',initials:'?',color:'#aaa'};}
+
+// ─── TAB SWITCH ──────────────────────────────────────────────────────────
+function switchTab(tab){
+  currentTab=tab;
+  viewingMemberId=null;
+  filterPriority='all';filterProject='all';filterAssignee='all';
+  document.querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('tab-'+tab);
+  if(el) el.classList.add('active');
+  // Show/hide header for home screen
+  document.getElementById('main-header').style.display=(tab==='home'||tab==='settings')?'none':'flex';
+  render();
+}
+
+// ─── HEADER ──────────────────────────────────────────────────────────────
+function updateHeader(){
+  const titles={home:'Accueil',planning:'Planning',tasks:'Mes tâches',team:'Équipe',notes:'Notes',projects:'Projets',settings:'Réglages'};
+  let title=titles[currentTab]||'Personal Assistant';
+  let sub='';
+  const aiBtn=document.getElementById('ai-btn');
+  const addBtn=document.getElementById('add-btn');
+  const headerRight=document.getElementById('header-right');
+
+  if(currentTab==='team'&&viewingMemberId){
+    const m=memberById(viewingMemberId);
+    title=m.name;
+    sub='Tâches assignées';
+    headerRight.innerHTML=`<button class="back-btn" onclick="backToTeam()">‹ Équipe</button><button class="icon-btn" onclick="openMemberModal('${viewingMemberId}')">✏️</button>`;
+  } else {
+    if(currentTab==='tasks'){
+      const active=tasks.filter(t=>!t.done&&t.assignedTo==='me');
+      const ov=active.filter(t=>daysDiff(t.deadline)<0).length;
+      sub=`${active.length} tâches${ov?` · ${ov} en retard`:''}`;
+    }
+    headerRight.innerHTML=`
+      <button class="icon-btn" id="ai-btn" onclick="triggerAI()" style="display:${currentTab==='tasks'?'flex':'none'}" title="IA">🧠</button>
+      <button class="icon-btn" id="add-btn" onclick="openAddModal()" style="display:${['tasks','projects','team','planning'].includes(currentTab)?'flex':'none'}" title="Ajouter">＋</button>
+    `;
+  }
+  document.getElementById('header-title').textContent=title;
+  document.getElementById('header-sub').textContent=sub;
+}
+
+function backToTeam(){viewingMemberId=null;render();}
+
+// ─── MAIN RENDER ────────────────────────────────────────────────────────
+function renderHome(){
+  const now=new Date();
+  const hours=now.getHours();
+  let greeting='Bonjour';
+  if(hours>=18) greeting='Bonsoir';
+  else if(hours>=12) greeting='Bon après-midi';
+
+  const days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dateStr=`${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  const allActive=tasks.filter(t=>!t.done);
+  const myActive=allActive.filter(t=>t.assignedTo==='me');
+  const overdue=myActive.filter(t=>daysDiff(t.deadline)<0).length;
+  const todayT=myActive.filter(t=>daysDiff(t.deadline)===0).length;
+  const critical=myActive.filter(t=>t.priority==='critical').length;
+  const teamOv=allActive.filter(t=>t.assignedTo!=='me'&&daysDiff(t.deadline)<0).length;
+
+  // Top 3 priority tasks for today
+  const top3=myActive.filter(t=>!t.done).sort((a,b)=>score(b)-score(a)).slice(0,3);
+
+  const navItems=[
+    {tab:'planning',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',label:'Planning',color:'var(--brand)',bg:'var(--brand-light)'},
+    {tab:'tasks',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>',label:'Tâches',color:'var(--brand)',bg:'var(--brand-light)'},
+    {tab:'team',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.314 2.686-6 6-6s6 2.686 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M15 20c0-2.761 1.343-5 3-5s3 2.239 3 5"/></svg>',label:'Équipe',color:'var(--brand)',bg:'var(--brand-light)'},
+    {tab:'notes',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',label:'Notes',color:'var(--brand2)',bg:'var(--brand2-light)'},
+    {tab:'projects',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>',label:'Projets',color:'var(--brand2)',bg:'var(--brand2-light)'},
+    {tab:'settings',icon:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',label:'Réglages',color:'var(--text2)',bg:'var(--bg3)'},
+  ];
+
+  let html=`
+    <!-- Hero splash -->
+    <div style="background:linear-gradient(160deg,#1A3A6B 0%,#0D2247 60%,#6B1228 100%);padding:48px 24px 36px;text-align:center;position:relative;overflow:hidden;">
+      <!-- decorative circles -->
+      <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(139,26,58,0.25);"></div>
+      <div style="position:absolute;bottom:-60px;left:-30px;width:200px;height:200px;border-radius:50%;background:rgba(26,58,107,0.3);"></div>
+      <!-- Logo -->
+      <div style="width:90px;height:90px;border-radius:22px;background:white;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,0.3);position:relative;overflow:hidden;">
+        <img src="apple-touch-icon.png" style="width:90px;height:90px;border-radius:22px;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+        <div style="display:none;width:90px;height:90px;background:linear-gradient(135deg,#1A3A6B,#8B1A3A);align-items:center;justify-content:center;font-size:36px;color:white;font-weight:700;border-radius:22px;">PA</div>
+      </div>
+      <div style="font-size:26px;font-weight:700;color:white;letter-spacing:-0.5px;margin-bottom:4px;">Personal Assistant</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.6);letter-spacing:-0.1px;">${dateStr}</div>
+      <div style="font-size:18px;color:rgba(255,255,255,0.85);margin-top:16px;font-weight:400;letter-spacing:-0.3px;">${greeting} 👋</div>
+    </div>
+
+    <!-- Summary cards -->
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 16px 8px;">
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
+        <div style="font-size:28px;font-weight:700;color:${overdue>0?'var(--red)':' var(--green)'};letter-spacing:-0.5px;">${overdue}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px;">En retard</div>
+      </div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
+        <div style="font-size:28px;font-weight:700;color:${critical>0?'var(--orange)':' var(--green)'};letter-spacing:-0.5px;">${critical}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px;">Critiques</div>
+      </div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
+        <div style="font-size:28px;font-weight:700;color:var(--brand);letter-spacing:-0.5px;">${myActive.length}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px;">Mes tâches</div>
+      </div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('team')">
+        <div style="font-size:28px;font-weight:700;color:${teamOv>0?'var(--red)':' var(--green)'};letter-spacing:-0.5px;">${teamOv}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px;">Équipe en retard</div>
+      </div>
+    </div>
+
+    <!-- Top 3 priority tasks -->
+    ${top3.length?`
+    <div style="padding:8px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">À faire en priorité</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 12px;overflow:hidden;">
+      ${top3.map((t,i)=>{
+        const pColors={critical:'var(--red)',high:'var(--orange)',medium:'var(--brand)',low:'var(--green)'};
+        const dl=fmtDate(t.deadline);
+        return `<div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:${i<top3.length-1?'0.5px solid var(--border-inner)':' none'};" onclick="switchTab('tasks')">
+          <div style="width:4px;height:36px;border-radius:2px;background:${pColors[t.priority]};flex-shrink:0;"></div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:15px;font-weight:500;letter-spacing:-0.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px;">${dl}</div>
+          </div>
+          <div style="color:var(--text3);font-size:18px;">›</div>
+        </div>`;
+      }).join('')}
+    </div>`:''}
+
+    <!-- Navigation grid -->
+    <div style="padding:8px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Navigation</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:0 16px 24px;">
+      ${navItems.map(n=>`
+        <div onclick="switchTab('${n.tab}')" style="background:var(--bg-card);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+          <div style="width:44px;height:44px;border-radius:12px;background:${n.bg};margin:0 auto 8px;display:flex;align-items:center;justify-content:center;color:${n.color};">${n.icon}</div>
+          <div style="font-size:13px;font-weight:500;color:var(--text);letter-spacing:-0.2px;">${n.label}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  document.getElementById('screen').innerHTML=html;
+}
+
+function renderSettings(){
+  const key=getApiKey();
+  const masked=key?'sk-ant-...'+key.slice(-6):'';
+  const isOk=!!key;
+  let html=`
+    <!-- Header block -->
+    <div style="background:linear-gradient(135deg,var(--brand) 0%,var(--brand2) 100%);padding:32px 24px 24px;text-align:center;">
+      <div style="font-size:36px;margin-bottom:8px;">⚙️</div>
+      <div style="font-size:20px;font-weight:700;color:white;letter-spacing:-0.4px;">Réglages</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-top:4px;">Personal Assistant</div>
+    </div>
+
+    <!-- API Key section -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;" id="api-key-notice">Clé API Anthropic</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:12px;">
+          La clé API permet à l'IA d'analyser tes tâches et d'extraire les actions depuis tes notes. Elle est stockée <strong>uniquement sur cet appareil</strong>, jamais sur un serveur.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:${isOk?'var(--green)':'var(--red)'};flex-shrink:0;"></div>
+          <div style="font-size:13px;color:${isOk?'var(--green-text)':'var(--red-text)'};">${isOk?'Clé configurée — '+masked:'Aucune clé configurée'}</div>
+        </div>
+        <input
+          class="form-input"
+          id="api-key-input"
+          type="password"
+          placeholder="sk-ant-api03-..."
+          value="${key}"
+          style="margin-bottom:10px;"
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        />
+        <button class="btn-primary" onclick="saveApiKeyFromInput()" style="margin-top:0;">
+          💾 Enregistrer la clé
+        </button>
+        ${isOk?`<button class="btn-danger" onclick="clearApiKey()" style="margin-top:8px;">Supprimer la clé</button>`:''}
+      </div>
+      <div style="padding:12px 16px;">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+          👉 Obtenir une clé : <span style="color:var(--blue);text-decoration:underline;cursor:pointer;" onclick="window.open('https://console.anthropic.com/settings/keys','_blank')">console.anthropic.com</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- App info -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">À propos</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Application</span>
+        <span style="font-size:15px;color:var(--text2);">Personal Assistant</span>
+      </div>
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Version</span>
+        <span style="font-size:15px;color:var(--text2);">2.0</span>
+      </div>
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Données</span>
+        <span style="font-size:15px;color:var(--text2);">Stockées localement</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Modèle IA</span>
+        <span style="font-size:13px;color:var(--text2);">${localStorage.getItem('pa_working_model')||'Auto-détecté'}</span>
+      </div>
+    </div>
+
+    <!-- Reset -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Zone dangereuse</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 24px;overflow:hidden;">
+      <div style="padding:14px 16px;">
+        <button class="btn-danger" style="margin-top:0;" onclick="confirmReset()">🗑 Réinitialiser toutes les données</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('screen').innerHTML=html;
+}
+
+function saveApiKeyFromInput(){
+  const val=document.getElementById('api-key-input').value.trim();
+  if(!val||!val.startsWith('sk-')){
+    alert('Clé invalide — elle doit commencer par sk-ant-...');return;
+  }
+  saveApiKey(val);
+  // Show success feedback
+  const btn=document.querySelector('#screen .btn-primary');
+  if(btn){btn.textContent='✓ Clé enregistrée !';btn.style.background='var(--green)';}
+  setTimeout(()=>renderSettings(),1200);
+}
+
+function clearApiKey(){
+  if(confirm('Supprimer la clé API ?')){
+    localStorage.removeItem('pa_api_key');
+    renderSettings();
+  }
+}
+
+function confirmReset(){
+  if(confirm('Supprimer TOUTES les données (tâches, projets, membres) ? Cette action est irréversible.')){
+    ['fp_projects','fp_members','fp_tasks','fp_meetings','fp_ai','fp_nextid','fp_install_dismissed'].forEach(k=>localStorage.removeItem(k));
+    location.reload();
+  }
+}
+
+function render(){
+  updateHeader();
+  if(currentTab==='home') renderHome();
+  else if(currentTab==='planning') renderPlanning();
+  else if(currentTab==='tasks') renderTasks();
+  else if(currentTab==='team') renderTeam();
+  else if(currentTab==='notes') renderNotes();
+  else if(currentTab==='projects') renderProjects();
+  else if(currentTab==='settings') renderSettings();
+}
+
+// ─── PLANNING ────────────────────────────────────────────────────────────
+function renderPlanning(){
+  let html=`<div class="seg-ctrl">
+    <button class="seg-btn ${planningView==='day'?'active':''}" onclick="setPlanView('day')">Aujourd'hui</button>
+    <button class="seg-btn ${planningView==='week'?'active':''}" onclick="setPlanView('week')">Cette semaine</button>
+  </div>`;
+  if(planningView==='day') html+=renderDayView(TODAY,true);
+  else html+=renderWeekView();
+  document.getElementById('screen').innerHTML=html;
+}
+
+function setPlanView(v){planningView=v;renderPlanning();}
+
+function renderDayView(date,showAddMeeting){
+  const slots=getDateSlots(date);
+  const dStr=date.toISOString().slice(0,10);
+  const days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dateLabel=`${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
+
+  // Build a chronological list of events: drive slots, ad hoc meetings, scheduled tasks
+  let events=[];
+
+  // Drive slots from base
+  slots.filter(sl=>sl.t==='drive').forEach(sl=>{
+    events.push({time:sl.s,end:sl.e,type:'drive',name:'🚗 Trajet voiture',sub:`${fmtDur(Math.round((sl.e-sl.s)*60))} · appels possibles`});
+  });
+
+  // Fixed/recurring meetings from base schedule (busy slots that are NOT drive and NOT from ad hoc)
+  // We show ad hoc meetings explicitly
+  adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+    events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60)),meetingId:m.id});
+  });
+
+  // Scheduled tasks for this day
+  const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+  // Track used time slots to avoid double-placing
+  const usedSlots=[];
+  myTasks.forEach(t=>{
+    const slot=findBestSlot(t);
+    if(!slot||slot.day.toDateString()!==date.toDateString()) return;
+    // Check not overlapping with already placed
+    const overlaps=usedSlots.some(u=>slot.start<u.end&&slot.end>u.start);
+    if(overlaps) return;
+    usedSlots.push({start:slot.start,end:slot.end});
+    const proj=projById(t.projectId);
+    events.push({time:slot.start,end:slot.end,type:'task',taskId:t.id,priority:t.priority,
+      name:t.title,sub:`${proj.name} · ${fmtDur(t.duration)} · fin ${fmtH(slot.end)}`,color:proj.color,slotType:slot.type});
+  });
+
+  // Sort chronologically
+  events.sort((a,b)=>a.time-b.time);
+
+  let html=`<div class="sec-hdr" style="padding-top:12px;">${dateLabel}</div>`;
+  html+=`<div class="tl-block">`;
+  if(!events.length){
+    html+=`<div class="tl-empty">Aucun créneau de travail aujourd'hui</div>`;
+  }
+  events.forEach(ev=>{
+    const barColor=ev.type==='drive'?'var(--orange)':ev.type==='meeting'?'var(--red)':
+      ev.priority==='critical'?'var(--red)':ev.priority==='high'?'var(--orange)':
+      ev.priority==='medium'?'var(--blue)':'var(--green)';
+    const del=ev.meetingId?`<span style="color:var(--text3);cursor:pointer;padding:0 4px;font-size:18px;" onclick="deleteMeeting('${ev.meetingId}')">×</span>`:'';
+    html+=`<div class="tl-row">
+      <div class="tl-time">${fmtH(ev.time)}</div>
+      <div class="tl-dot" style="background:${barColor}"></div>
+      <div class="tl-content">
+        <div class="tl-name">${ev.name}</div>
+        <div class="tl-sub">${ev.sub}</div>
+      </div>
+      ${del}
+    </div>`;
+  });
+  html+=`</div>`;
+  if(showAddMeeting){
+    html+=`<div style="padding:4px 12px 8px;">
+      <button style="width:100%;padding:10px;font-size:14px;border:0.5px dashed var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;" onclick="openMeetingModal()">+ Bloquer une réunion ad hoc</button>
+    </div>`;
+  }
+  return html;
+}
+
+function renderWeekView(){
+  let html='';
+  for(let di=0;di<7;di++){
+    const d=new Date(TODAY);d.setDate(d.getDate()+di);
+    const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const months=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+    const label=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+    const slots=getDateSlots(d);
+    const dStr=d.toISOString().slice(0,10);
+
+    // Build events for the day
+    let events=[];
+    slots.filter(sl=>sl.t==='drive').forEach(sl=>{
+      events.push({time:sl.s,end:sl.e,type:'drive',name:'🚗 Trajet',sub:`${fmtDur(Math.round((sl.e-sl.s)*60))}`});
+    });
+    adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+      events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60))});
+    });
+    const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+    const used=[];
+    myTasks.forEach(t=>{
+      const slot=findBestSlot(t);
+      if(!slot||slot.day.toDateString()!==d.toDateString()) return;
+      if(used.some(u=>slot.start<u.end&&slot.end>u.start)) return;
+      used.push({start:slot.start,end:slot.end});
+      const proj=projById(t.projectId);
+      events.push({time:slot.start,end:slot.end,type:'task',priority:t.priority,
+        name:t.title,sub:`${proj.name} · ${fmtDur(t.duration)}`});
+    });
+    events.sort((a,b)=>a.time-b.time);
+
+    html+=`<div class="sec-hdr" style="padding-top:${di===0?'12':'4'}px;">${di===0?'Aujourd\'hui — ':di===1?'Demain — ':''}${label}</div>`;
+    html+=`<div class="tl-block">`;
+    if(!events.length){
+      html+=`<div class="tl-empty">Pas de créneau de travail</div>`;
+    }
+    events.forEach(ev=>{
+      const barColor=ev.type==='drive'?'var(--orange)':ev.type==='meeting'?'var(--red)':
+        ev.priority==='critical'?'var(--red)':ev.priority==='high'?'var(--orange)':
+        ev.priority==='medium'?'var(--blue)':'var(--green)';
+      html+=`<div class="tl-row">
+        <div class="tl-time">${fmtH(ev.time)}</div>
+        <div class="tl-dot" style="background:${barColor}"></div>
+        <div class="tl-content">
+          <div class="tl-name ellipsis">${ev.name}</div>
+          <div class="tl-sub">${ev.sub}</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  return html;
+}
+
+// ─── TASKS ───────────────────────────────────────────────────────────────
+function renderTasks(){
+  let filtered=tasks.filter(t=>{
+    if(filterPriority!=='all'&&t.priority!==filterPriority) return false;
+    if(filterProject!=='all'&&t.projectId!==filterProject) return false;
+    if(filterAssignee==='me'&&t.assignedTo!=='me') return false;
+    if(filterAssignee==='team'&&t.assignedTo==='me') return false;
+    return true;
+  });
+  const active=filtered.filter(t=>!t.done).sort((a,b)=>score(b)-score(a));
+  const done=filtered.filter(t=>t.done);
+
+  const allActive=tasks.filter(t=>!t.done);
+  const overdue=allActive.filter(t=>daysDiff(t.deadline)<0).length;
+  const critical=allActive.filter(t=>t.priority==='critical').length;
+  const myCount=allActive.filter(t=>t.assignedTo==='me').length;
+  const teamOv=allActive.filter(t=>t.assignedTo!=='me'&&daysDiff(t.deadline)<0).length;
+
+  let html='';
+  if(showInstall){
+    html+=`<div class="install-banner"><div class="install-text">📲 Installer sur iPhone : Safari → Partager → Sur l'écran d'accueil</div><div class="install-close" onclick="dismissInstall()">×</div></div>`;
+  }
+  html+=`<div class="stat-row">
+    <div class="stat-card"><div class="stat-val ${overdue?'red':''}">${overdue}</div><div class="stat-lbl">En retard</div></div>
+    <div class="stat-card"><div class="stat-val ${critical?'orange':''}">${critical}</div><div class="stat-lbl">Critiques</div></div>
+    <div class="stat-card"><div class="stat-val blue">${myCount}</div><div class="stat-lbl">Mes tâches</div></div>
+    <div class="stat-card"><div class="stat-val ${teamOv?'red':'green'}">${teamOv}</div><div class="stat-lbl">Équipe ⚠</div></div>
+  </div>`;
+
+  if(aiResponse){
+    html+=`<div class="ai-panel"><div class="ai-title">🧠 Recommandation IA</div><div class="ai-text">${aiResponse}</div></div>`;
+  }
+
+  html+=`<div class="chips">
+    <div class="chip ${filterPriority==='all'&&filterProject==='all'&&filterAssignee==='all'?'active':''}" onclick="resetFilters()">Toutes</div>
+    <div class="chip ${filterAssignee==='me'?'active':''}" onclick="setFA('me')">Mes tâches</div>
+    <div class="chip ${filterAssignee==='team'?'active':''}" onclick="setFA('team')">Équipe</div>
+    <div class="chip ${filterPriority==='critical'?'active':''}" onclick="setFP('critical')">🔴 Critique</div>
+    <div class="chip ${filterPriority==='high'?'active':''}" onclick="setFP('high')">🟠 Haute</div>
+    ${projects.map(p=>`<div class="chip ${filterProject===p.id?'active':''}" onclick="setFProj('${p.id}')">${p.name}</div>`).join('')}
+  </div>`;
+
+  if(!active.length) html+=`<div style="text-align:center;padding:48px 24px;color:var(--text2);"><div style="font-size:40px;margin-bottom:12px;">✅</div><div style="font-size:17px;font-weight:500;color:var(--text);">Aucune tâche active</div></div>`;
+  active.forEach(t=>{ html+=renderTaskRow(t); });
+
+  if(done.length){
+    html+=`<div class="sec-hdr">Terminées (${done.length})</div><div class="ios-card">`;
+    done.forEach(t=>{
+      html+=`<div class="ios-row"><div class="task-check done" onclick="toggleDone('${t.id}')"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div><div class="row-label ellipsis" style="font-size:15px;text-decoration:line-through;color:var(--text3);">${t.title}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  document.getElementById('screen').innerHTML=html;
+}
+
+function renderTaskRow(t){
+  const proj=projById(t.projectId);
+  const slot=findBestSlot(t);
+  const sl=fmtSlotPill(slot);
+  const member=memberById(t.assignedTo);
+  const isTeam=t.assignedTo!=='me';
+  const dlCls=deadlineCls(t.deadline);
+  const dlLabel=fmtDate(t.deadline);
+  const pLabels={critical:'🔴 Critique',high:'🟠 Haute',medium:'🔵 Moyenne',low:'🟢 Basse'};
+
+  return `<div class="task-card p-${t.priority}" onclick="openTaskModal('${t.id}')">
+    <div class="task-top">
+      <div class="task-check ${t.done?'done':''}" onclick="event.stopPropagation();toggleDone('${t.id}')">
+        <svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg>
+      </div>
+      <div class="task-main">
+        <div class="task-title ${t.done?'done':''}">${t.title}</div>
+        <span class="p-label ${t.priority}">${pLabels[t.priority]}</span>
+      </div>
+    </div>
+    <div class="task-tags">
+      <span class="tag ${dlCls}">${dlLabel}</span>
+      <span class="tag">⏱ ${fmtDur(t.duration)}</span>
+      <span class="tag" style="background:${proj.color}18;color:${proj.color};">${proj.name}</span>
+      ${isTeam?`<span class="tag team-tag">👤 ${member.name}</span>`:''}
+      ${t.callOk?'<span class="tag" style="background:var(--orange-bg);color:var(--orange-text);">🚗 Voiture ok</span>':''}
+      <span class="tag ${sl.cls}">📅 ${sl.label}</span>
+    </div>
+    <div class="task-actions" onclick="event.stopPropagation()">
+      <button class="act-btn ${t.status==='done'?'s-done':''}" onclick="setStatus('${t.id}','done')">✓ Fait</button>
+      <button class="act-btn ${t.status==='deferred'?'s-defer':''}" onclick="setStatus('${t.id}','deferred')">↷ Reporter</button>
+      <button class="act-btn ${t.status==='more-time'?'s-more':''}" onclick="setStatus('${t.id}','more-time')">⏱ + Temps</button>
+      <button class="act-btn" onclick="exportToCalendar('${t.id}')" style="color:var(--brand);">📅</button>
+    </div>
+  </div>`;
+}
+
+function resetFilters(){filterPriority='all';filterProject='all';filterAssignee='all';renderTasks();}
+function setFP(p){filterPriority=filterPriority===p?'all':p;renderTasks();}
+function setFProj(p){filterProject=filterProject===p?'all':p;renderTasks();}
+function setFA(a){filterAssignee=filterAssignee===a?'all':a;renderTasks();}
+function dismissInstall(){showInstall=false;save('fp_install_dismissed',true);renderTasks();}
+
+function toggleDone(id){
+  const t=tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;t.status=t.done?'done':'todo';saveAll();render();}
+}
+function setStatus(id,status){
+  const t=tasks.find(x=>x.id===id);if(!t) return;
+  t.status=status;
+  if(status==='done'){t.done=true;}
+  else if(status==='deferred'){const d=new Date(t.deadline);d.setDate(d.getDate()+2);t.deadline=d.toISOString().slice(0,10);t.done=false;}
+  else if(status==='more-time'){t.duration=Math.round(t.duration*1.5);t.done=false;}
+  saveAll();render();
+}
+
+// ─── TEAM ────────────────────────────────────────────────────────────────
+function renderTeam(){
+  if(viewingMemberId){
+    renderMemberTasks(viewingMemberId);return;
+  }
+  let html=`<div class="ios-card" style="margin-top:12px;">`;
+  members.forEach(m=>{
+    const mt=tasks.filter(t=>t.assignedTo===m.id&&!t.done);
+    const ov=mt.filter(t=>daysDiff(t.deadline)<0).length;
+    html+=`<div class="member-card" onclick="openMemberDetail('${m.id}')">
+      <div class="avatar" style="background:${m.color}22;color:${m.color};">${m.initials}</div>
+      <div class="member-info">
+        <div class="member-name">${m.name}</div>
+        <div class="member-meta">${mt.length} tâche${mt.length>1?'s':''} en cours</div>
+      </div>
+      ${ov?`<div class="alert-badge">${ov} en retard</div>`:''}
+      <span style="color:var(--text3);font-size:20px;margin-left:4px;">›</span>
+    </div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('screen').innerHTML=html;
+}
+
+function openMemberDetail(memberId){
+  viewingMemberId=memberId;
+  render();
+}
+
+function renderMemberTasks(memberId){
+  const m=memberById(memberId);
+  const mt=tasks.filter(t=>t.assignedTo===memberId&&!t.done).sort((a,b)=>score(b)-score(a));
+  const done=tasks.filter(t=>t.assignedTo===memberId&&t.done);
+  let html=``;
+  if(!mt.length&&!done.length){
+    html+=`<div class="empty" style="margin-top:20px;"><div class="empty-icon">🎉</div><div class="empty-title">Aucune tâche</div><div class="empty-sub">${m.name} n'a pas de tâche en cours.</div></div>`;
+  }
+  if(mt.length){
+    html+=`<div style="margin-top:12px;">`;
+    mt.forEach(t=>{html+=renderTaskRow(t);});
+    html+=`</div>`;
+  }
+  if(done.length){
+    html+=`<div class="sec-hdr">Terminées (${done.length})</div><div class="ios-card">`;
+    done.forEach(t=>{
+      html+=`<div class="ios-row"><div class="row-label ellipsis" style="font-size:15px;text-decoration:line-through;color:var(--text3);">${t.title}</div></div>`;
+    });
+    html+=`</div>`;
+  }
+  document.getElementById('screen').innerHTML=html;
+}
+
+// ─── NOTES ──────────────────────────────────────────────────────────────
+function renderNotes(){
+  const followupTasks=tasks.filter(t=>t.notes&&t.notes.startsWith('[Suivi]'));
+  let html=`
+    <div class="sec-hdr" style="padding-top:12px;">Notes de réunion → Tâches</div>
+    <div class="fu-box">
+      <textarea class="fu-textarea" id="fu-input" placeholder="Colle tes notes ou compte-rendu ici…&#10;&#10;Ex: Réunion TechCo lundi — rappeler leur DG la semaine prochaine, envoyer notre roadmap avant jeudi, Sophie doit préparer la présentation pour vendredi…"></textarea>
+      <div class="fu-footer">
+        <span class="fu-hint">L'IA extrait et crée les tâches</span>
+        <button class="fu-btn" onclick="processFollowup()">🧠 Extraire ↗</button>
+      </div>
+    </div>
+    <div id="fu-result"></div>`;
+  if(followupTasks.length){
+    html+=`<div class="sec-hdr">Créées depuis des réunions</div>`;
+    followupTasks.forEach(t=>{html+=renderTaskRow(t);});
+  }
+  document.getElementById('screen').innerHTML=html;
+}
+
+// ─── PROJECTS ───────────────────────────────────────────────────────────
+function renderProjects(){
+  let html=`<div class="ios-card" style="margin-top:12px;">`;
+  if(!projects.length) html+=`<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">Aucun projet</div></div>`;
+  projects.forEach(p=>{
+    const count=tasks.filter(t=>t.projectId===p.id&&!t.done).length;
+    const ov=tasks.filter(t=>t.projectId===p.id&&!t.done&&daysDiff(t.deadline)<0).length;
+    html+=`<div class="proj-card" onclick="openProjectModal('${p.id}')">
+      <div class="proj-dot" style="background:${p.color}"></div>
+      <div class="proj-info">
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-meta">${count} tâche${count>1?'s':''} en cours${ov?` · <span style="color:var(--red)">${ov} en retard</span>`:''}</div>
+      </div>
+      <span style="color:var(--text3);font-size:20px;">›</span>
+    </div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('screen').innerHTML=html;
+}
+
+// ─── AI ─────────────────────────────────────────────────────────────────
+async function triggerAI(){
+  if(!hasApiKey()){
+    aiResponse='';
+    switchTab('settings');
+    document.getElementById('api-key-notice')?.scrollIntoView({behavior:'smooth'});
+    return;
+  }
+  const active=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+  if(!active.length) return;
+  aiResponse='⏳';render();
+  const panel=document.querySelector('.ai-panel');
+  if(panel) panel.querySelector('.ai-text').innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+
+  const d=new Date();
+  const dayNames=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const summary=active.slice(0,10).map((t,i)=>{
+    const sl=fmtSlotPill(findBestSlot(t));
+    return `${i+1}. "${t.title}" (${projById(t.projectId).name}) — ${t.priority}, deadline:${t.deadline}, ${fmtDur(t.duration)}${t.callOk?' [appel voiture ok]':''}, créneau:${sl.label}`;
+  }).join('\n');
+  const teamAlert=tasks.filter(t=>!t.done&&t.assignedTo!=='me'&&daysDiff(t.deadline)<0)
+    .map(t=>`"${t.title}" (${memberById(t.assignedTo).name}) retard ${Math.abs(daysDiff(t.deadline))}j`).join(', ');
+
+  try{
+    const text=await callAI([{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nDonne un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, et une alerte si quelque chose risque de lui échapper. Tutoie-le. Direct et actionnable.`}],800);
+    aiResponse=text||'Impossible d\'analyser.';
+  }catch(e){
+    console.error('AI error:',e);
+    if(e.message==='CLE_MANQUANTE'){aiResponse='';switchTab('settings');return;}
+    aiResponse='Erreur: '+(e.message||'connexion échouée');
+  }
+  saveAll();render();
+}
+
+async function processFollowup(){
+  const input=document.getElementById('fu-input')?.value.trim();
+  if(!input){alert('Écris tes notes d\'abord !');return;}
+  const re=document.getElementById('fu-result');
+  if(!re) return;
+  re.innerHTML=`<div style="text-align:center;padding:16px;color:var(--text2);font-size:14px;"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Extraction en cours…</div>`;
+
+  const memberList=members.map(m=>`${m.id}:${m.name}`).join(', ');
+  const projectList=projects.map(p=>`${p.id}:${p.name}`).join(', ');
+
+  try{
+    let text=(await callAI([{role:'user',content:`Extrait toutes les tâches à faire depuis ce texte. Membres: moi="me", ${memberList}. Projets: ${projectList}.\n\nRéponds UNIQUEMENT avec un tableau JSON valide, sans markdown, sans backticks, sans texte avant ou après. Chaque objet: {"title":"...","projectId":"...","priority":"critical|high|medium|low","deadline":"YYYY-MM-DD","duration":60,"callOk":false,"assignedTo":"me ou id_membre"}. Deadline depuis aujourd'hui ${todayStr()}.\n\nTexte:\n${input}`}],1500)).trim();
+    // Strip any markdown fences
+    text=text.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
+    // Find JSON array
+    const start=text.indexOf('[');const end=text.lastIndexOf(']');
+    if(start===-1||end===-1) throw new Error('No JSON array found');
+    text=text.slice(start,end+1);
+    const extracted=JSON.parse(text);
+    if(!Array.isArray(extracted)||extracted.length===0){
+      re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--orange-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--orange-text);">Aucune tâche détectée dans ce texte.</div>`;
+      return;
+    }
+    extracted.forEach(t=>{
+      tasks.push({
+        id:genId(),title:t.title||'Tâche',
+        projectId:projects.find(p=>p.id===t.projectId)?t.projectId:(projects[0]?.id||'p1'),
+        priority:['critical','high','medium','low'].includes(t.priority)?t.priority:'medium',
+        deadline:t.deadline||todayStr(),duration:parseInt(t.duration)||30,
+        done:false,status:'todo',notes:'[Suivi] '+input.substring(0,100),
+        callOk:!!t.callOk,
+        assignedTo:t.assignedTo==='me'?'me':(members.find(m=>m.id===t.assignedTo)?t.assignedTo:'me')
+      });
+    });
+    saveAll();
+    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);">✓ ${extracted.length} tâche(s) créées et planifiées automatiquement !</div>`;
+    setTimeout(()=>{document.getElementById('fu-input').value='';render();},1500);
+  }catch(e){
+    console.error('Followup error:',e);
+    if(e.message==='CLE_MANQUANTE'){
+      re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">🔑 Clé API manquante — configure-la dans <strong>Réglages</strong>.</div>`;
+      return;
+    }
+    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">Erreur: ${e.message||'Connexion échouée'}.</div>`;
+  }
+}
+
+// ─── MODALS ──────────────────────────────────────────────────────────────
+function openSheet(title,body){
+  document.getElementById('sheet-title').textContent=title;
+  document.getElementById('sheet-body').innerHTML=body;
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSheet(){document.getElementById('overlay').classList.remove('open');}
+function handleOverlayClick(e){if(e.target===document.getElementById('overlay')) closeSheet();}
+
+function openAddModal(){
+  if(currentTab==='tasks') openTaskModal(null);
+  else if(currentTab==='projects') openProjectModal(null);
+  else if(currentTab==='team') openMemberModal(null);
+  else if(currentTab==='planning') openMeetingModal();
+}
+
+function openTaskModal(id){
+  const t=id?tasks.find(x=>x.id===id):null;
+  const slot=t&&!t.done?fmtSlotPill(findBestSlot(t)):null;
+  const projOpts=projects.map(p=>`<option value="${p.id}" ${t?.projectId===p.id?'selected':''}>${p.name}</option>`).join('');
+  const memberOpts=`<option value="me" ${!t||t.assignedTo==='me'?'selected':''}>Moi</option>`+members.map(m=>`<option value="${m.id}" ${t?.assignedTo===m.id?'selected':''}>${m.name}</option>`).join('');
+
+  openSheet(id?'Modifier la tâche':'Nouvelle tâche',`
+    ${slot?`<div style="padding:8px 12px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);margin-bottom:14px;">📅 Créneau suggéré : ${slot.label}</div>`:''}
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" value="${t?t.title.replace(/"/g,'&quot;'):''}" placeholder="Que faut-il faire ?"/></div>
+    <div class="form-row2">
+      <div class="form-field"><label class="form-label">Projet</label><select class="form-select" id="f-project">${projOpts}</select></div>
+      <div class="form-field"><label class="form-label">Assigné à</label><select class="form-select" id="f-assignee">${memberOpts}</select></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-field"><label class="form-label">Criticité</label><select class="form-select" id="f-priority">
+        <option value="critical" ${t?.priority==='critical'?'selected':''}>🔴 Critique</option>
+        <option value="high" ${t?.priority==='high'?'selected':''}>🟠 Haute</option>
+        <option value="medium" ${!t||t.priority==='medium'?'selected':''}>🔵 Moyenne</option>
+        <option value="low" ${t?.priority==='low'?'selected':''}>🟢 Basse</option>
+      </select></div>
+      <div class="form-field"><label class="form-label">Deadline</label><input class="form-input" type="date" id="f-deadline" value="${t?t.deadline:todayStr()}"/></div>
+    </div>
+    <div class="form-row2">
+      <div class="form-field"><label class="form-label">Durée (min)</label><input class="form-input" type="number" id="f-duration" value="${t?t.duration:60}" min="5"/></div>
+      <div class="form-field"><label class="form-label">Type</label><select class="form-select" id="f-callok">
+        <option value="0" ${!t?.callOk?'selected':''}>💻 Concentration</option>
+        <option value="1" ${t?.callOk?'selected':''}>🚗 Appel voiture ok</option>
+      </select></div>
+    </div>
+    <div class="form-field"><label class="form-label">Notes</label><textarea class="form-input" id="f-notes" rows="2" placeholder="Contexte, dépendances…">${t?t.notes:''}</textarea></div>
+    <button class="btn-primary" onclick="saveTask('${id||''}')">💾 ${id?'Enregistrer':'Créer la tâche'}</button>
+    ${id?`<button class="btn-secondary" style="background:var(--brand-light);color:var(--brand);border-color:transparent;" onclick="exportToCalendar('${id}');closeSheet()">📅 Ajouter à Calendrier Apple</button>`:''}
+    ${id?`<button class="btn-danger" onclick="deleteTask('${id}')">Supprimer</button>`:''}
+    <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
+  `);
+}
+
+function saveTask(id){
+  const title=document.getElementById('f-title').value.trim();
+  const projectId=document.getElementById('f-project').value;
+  const assignedTo=document.getElementById('f-assignee').value;
+  const priority=document.getElementById('f-priority').value;
+  const deadline=document.getElementById('f-deadline').value;
+  const duration=parseInt(document.getElementById('f-duration').value)||60;
+  const callOk=document.getElementById('f-callok').value==='1';
+  const notes=document.getElementById('f-notes').value.trim();
+  if(!title||!deadline) return;
+  if(id){const t=tasks.find(x=>x.id===id);Object.assign(t,{title,projectId,assignedTo,priority,deadline,duration,callOk,notes});}
+  else tasks.push({id:genId(),title,projectId,assignedTo,priority,deadline,duration,done:false,status:'todo',notes,callOk});
+  saveAll();closeSheet();render();
+}
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);saveAll();closeSheet();render();}
+
+function openProjectModal(id){
+  const p=id?projects.find(x=>x.id===id):null;
+  const swatches=COLORS.map(c=>`<div class="color-swatch ${p?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+  openSheet(id?'Modifier le projet':'Nouveau projet',`
+    <div class="form-field"><label class="form-label">Nom du projet</label><input class="form-input" id="p-name" value="${p?p.name:''}" placeholder="Nom du projet"/></div>
+    <div class="form-field"><label class="form-label">Couleur</label><div class="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${p?p.color:COLORS[0]}"/></div>
+    <button class="btn-primary" onclick="saveProject('${id||''}')">💾 ${id?'Enregistrer':'Créer'}</button>
+    ${id?`<button class="btn-danger" onclick="deleteProject('${id}')">Supprimer</button>`:''}
+    <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
+  `);
+}
+function selectColor(c){
+  document.getElementById('p-color').value=c;
+  document.querySelectorAll('.color-swatch').forEach(s=>{
+    const sc=s.style.backgroundColor||s.style.background;
+    s.classList.toggle('selected',sc===c||s.style.background===c);
+  });
+}
+function saveProject(id){
+  const name=document.getElementById('p-name').value.trim();
+  const color=document.getElementById('p-color').value;
+  if(!name) return;
+  if(id){const p=projects.find(x=>x.id===id);Object.assign(p,{name,color});}
+  else projects.push({id:genId(),name,color});
+  saveAll();closeSheet();render();
+}
+function deleteProject(id){
+  projects=projects.filter(p=>p.id!==id);
+  tasks.forEach(t=>{if(t.projectId===id) t.projectId=projects[0]?.id||'';});
+  saveAll();closeSheet();render();
+}
+
+function openMemberModal(id){
+  const m=id?members.find(x=>x.id===id):null;
+  const swatches=COLORS.map(c=>`<div class="color-swatch ${m?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+  openSheet(id?'Modifier le membre':'Nouveau membre',`
+    <div class="form-field"><label class="form-label">Nom</label><input class="form-input" id="m-name" value="${m?m.name:''}" placeholder="Prénom Nom"/></div>
+    <div class="form-field"><label class="form-label">Initiales</label><input class="form-input" id="m-initials" value="${m?m.initials:''}" maxlength="3" placeholder="AB"/></div>
+    <div class="form-field"><label class="form-label">Couleur</label><div class="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${m?m.color:COLORS[5]}"/></div>
+    <button class="btn-primary" onclick="saveMember('${id||''}')">💾 ${id?'Enregistrer':'Ajouter'}</button>
+    ${id?`<button class="btn-danger" onclick="deleteMember('${id}')">Retirer</button>`:''}
+    <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
+  `);
+}
+function saveMember(id){
+  const name=document.getElementById('m-name').value.trim();
+  const initials=document.getElementById('m-initials').value.trim().toUpperCase();
+  const color=document.getElementById('p-color').value;
+  if(!name||!initials) return;
+  if(id){const m=members.find(x=>x.id===id);Object.assign(m,{name,initials,color});}
+  else members.push({id:genId(),name,initials,color});
+  saveAll();closeSheet();render();
+}
+function deleteMember(id){
+  tasks.forEach(t=>{if(t.assignedTo===id) t.assignedTo='me';});
+  members=members.filter(m=>m.id!==id);
+  if(viewingMemberId===id) viewingMemberId=null;
+  saveAll();closeSheet();render();
+}
+
+function openMeetingModal(){
+  openSheet('Bloquer une réunion',`
+    <div class="form-field"><label class="form-label">Sujet</label><input class="form-input" id="mt-name" placeholder="Ex: Call client Eurotech"/></div>
+    <div class="form-field"><label class="form-label">Date</label><input class="form-input" type="date" id="mt-date" value="${todayStr()}"/></div>
+    <div class="form-row2">
+      <div class="form-field"><label class="form-label">Début</label><input class="form-input" type="time" id="mt-start" value="09:00"/></div>
+      <div class="form-field"><label class="form-label">Fin</label><input class="form-input" type="time" id="mt-end" value="10:00"/></div>
+    </div>
+    <div id="mt-impact" style="margin-bottom:10px;"></div>
+    <button class="btn-primary" onclick="saveMeeting()">📅 Bloquer</button>
+    <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
+  `);
+  ['mt-start','mt-end','mt-date'].forEach(id=>{document.getElementById(id).addEventListener('change',previewImpact);});
+}
+function previewImpact(){
+  const date=document.getElementById('mt-date').value;
+  const sv=document.getElementById('mt-start').value;
+  const ev=document.getElementById('mt-end').value;
+  if(!date||!sv||!ev) return;
+  const[sh,sm]=sv.split(':').map(Number);const[eh,em]=ev.split(':').map(Number);
+  const s=sh+sm/60,e=eh+em/60;if(e<=s) return;
+  const displaced=tasks.filter(t=>!t.done&&t.assignedTo==='me').filter(t=>{
+    const sl=findBestSlot(t);
+    return sl&&sl.day.toISOString().slice(0,10)===date&&sl.start<e&&sl.end>s;
+  });
+  document.getElementById('mt-impact').innerHTML=displaced.length
+    ?`<div style="padding:8px 10px;background:var(--orange-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--orange-text);">⚠ ${displaced.length} tâche(s) replanifiées : ${displaced.map(t=>t.title).join(', ')}</div>`
+    :`<div style="padding:8px 10px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--green-text);">✓ Aucune tâche impactée</div>`;
+}
+function saveMeeting(){
+  const name=document.getElementById('mt-name').value.trim();
+  const date=document.getElementById('mt-date').value;
+  const sv=document.getElementById('mt-start').value;
+  const ev=document.getElementById('mt-end').value;
+  if(!name||!date||!sv||!ev) return;
+  const[sh,sm]=sv.split(':').map(Number);const[eh,em]=ev.split(':').map(Number);
+  adHocMeetings.push({id:genId(),name,date,start:sh+sm/60,end:eh+em/60});
+  saveAll();closeSheet();render();
+}
+function deleteMeeting(id){
+  adHocMeetings=adHocMeetings.filter(m=>m.id!==id);
+  saveAll();renderPlanning();
+}
+
+
+// ─── CALENDAR EXPORT (.ics) ──────────────────────────────────────────────
+function taskToICS(t){
+  const proj=projById(t.projectId);
+  const dl=new Date(t.deadline);
+  // Schedule at best slot time if available, else 9am
+  const slot=findBestSlot(t);
+  let startH=9,startM=0;
+  if(slot){startH=Math.floor(slot.start);startM=Math.round((slot.start-startH)*60);}
+  const start=new Date(dl);start.setHours(startH,startM,0,0);
+  const end=new Date(start.getTime()+t.duration*60000);
+  function icsDate(d){
+    return d.getFullYear()+
+      String(d.getMonth()+1).padStart(2,'0')+
+      String(d.getDate()).padStart(2,'0')+'T'+
+      String(d.getHours()).padStart(2,'0')+
+      String(d.getMinutes()).padStart(2,'0')+'00';
+  }
+  const uid=t.id+'@personal-assistant-app';
+  const now=icsDate(new Date());
+  const member=memberById(t.assignedTo);
+  const desc=`Projet: ${proj.name}\nPriorité: ${t.priority}\nAssigné à: ${member.name}${t.notes?'\nNotes: '+t.notes:''}`;
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Personal Assistant//FR',
+    'BEGIN:VEVENT',
+    `UID:${uid}`,
+    `DTSTAMP:${now}`,
+    `DTSTART:${icsDate(start)}`,
+    `DTEND:${icsDate(end)}`,
+    `SUMMARY:${t.title}`,
+    `DESCRIPTION:${desc.replace(/\n/g,'\n')}`,
+    `CATEGORIES:${proj.name}`,
+    'BEGIN:VALARM',
+    'TRIGGER:-PT30M',
+    'ACTION:DISPLAY',
+    `DESCRIPTION:Rappel: ${t.title}`,
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+function exportToCalendar(taskId){
+  const t=tasks.find(x=>x.id===taskId);
+  if(!t) return;
+  const ics=taskToICS(t);
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=t.title.replace(/[^a-z0-9]/gi,'_')+'.ics';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+}
+
+function exportMeetingToCalendar(meetingId){
+  const m=adHocMeetings.find(x=>x.id===meetingId);
+  if(!m) return;
+  const sH=Math.floor(m.start),sM=Math.round((m.start-sH)*60);
+  const eH=Math.floor(m.end),eM=Math.round((m.end-eH)*60);
+  const d=new Date(m.date);
+  const start=new Date(d);start.setHours(sH,sM,0,0);
+  const end=new Date(d);end.setHours(eH,eM,0,0);
+  function icsDate(d){return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+String(d.getMinutes()).padStart(2,'0')+'00';}
+  const uid=m.id+'@personal-assistant-app';
+  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Personal Assistant//FR','BEGIN:VEVENT',`UID:${uid}`,`DTSTAMP:${icsDate(new Date())}`,`DTSTART:${icsDate(start)}`,`DTEND:${icsDate(end)}`,`SUMMARY:${m.name}`,'BEGIN:VALARM','TRIGGER:-PT15M','ACTION:DISPLAY',`DESCRIPTION:Rappel: ${m.name}`,'END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
+  const blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=m.name.replace(/[^a-z0-9]/gi,'_')+'.ics';
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+}
+
+// ─── SERVICE WORKER ──────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
