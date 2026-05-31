@@ -502,6 +502,28 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 </div>
 
 <script>
+// ─── FORCE UPDATE — version token ───────────────────────────────────────────
+const APP_VERSION = 'v8-haiku';
+if(localStorage.getItem('pa_app_version') !== APP_VERSION){
+  // Unregister all old service workers to force fresh load
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      regs.forEach(r=>r.unregister());
+    });
+  }
+  // Clear old cache keys
+  if('caches' in window){
+    caches.keys().then(keys=>keys.forEach(k=>caches.delete(k)));
+  }
+  localStorage.setItem('pa_app_version', APP_VERSION);
+  // Only reload if we haven't just reloaded (prevent loop)
+  if(!sessionStorage.getItem('pa_reloaded')){
+    sessionStorage.setItem('pa_reloaded','1');
+    window.location.reload(true);
+  }
+}
+sessionStorage.removeItem('pa_reloaded');
+
 // ─── DATA ──────────────────────────────────────────────────────────────────
 const COLORS=['#FF3B30','#FF9500','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#32ADE6','#00C7BE','#A2845E'];
 
@@ -512,22 +534,54 @@ function getApiKey(){return localStorage.getItem('pa_api_key')||'';}
 function saveApiKey(k){localStorage.setItem('pa_api_key',k.trim());}
 function hasApiKey(){return !!getApiKey();}
 
+// Models to try in order — most recent first
+const AI_MODELS=[
+  'claude-haiku-4-5-20251001',
+  'claude-haiku-4-5',
+  'claude-3-5-haiku-20241022',
+  'claude-3-haiku-20240307',
+];
+let _workingModel=localStorage.getItem('pa_working_model')||null;
+
 async function callAI(messages, maxTokens=1000){
   const key=getApiKey();
   if(!key) throw new Error('CLE_MANQUANTE');
-  const res=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':key,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,messages})
-  });
-  const data=await res.json();
-  if(data.error) throw new Error(data.error.message||JSON.stringify(data.error));
-  return data.content?.[0]?.text||'';
+
+  // If we already found a working model, use it directly
+  const modelsToTry=_workingModel?[_workingModel]:AI_MODELS;
+
+  for(const model of modelsToTry){
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({model,max_tokens:maxTokens,messages})
+    });
+    const raw=await res.text();
+    let data;
+    try{data=JSON.parse(raw);}catch(e){continue;}
+    // If model not found or invalid, try next
+    if(data.error?.type==='not_found_error'||data.error?.message?.includes('model')){
+      console.warn('Model not available:',model);
+      continue;
+    }
+    if(!res.ok||data.error){
+      const msg=data.error?.message||data.error?.type||JSON.stringify(data).slice(0,200);
+      throw new Error('API '+res.status+': '+msg);
+    }
+    // Success — remember this model
+    if(_workingModel!==model){
+      _workingModel=model;
+      localStorage.setItem('pa_working_model',model);
+      console.log('Working model found:',model);
+    }
+    return data.content?.[0]?.text||'';
+  }
+  throw new Error('Aucun modèle IA disponible. Vérifie ta clé API dans Réglages.');
 }
 function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
@@ -573,6 +627,9 @@ function genId(){return 'id'+(nextId++);}
 // ─── DATE/SCHEDULE ENGINE ─────────────────────────────────────────────────
 const TODAY=new Date(2026,4,31);TODAY.setHours(0,0,0,0);
 function todayStr(){return '2026-05-31';}
+// Real current datetime for slot scheduling
+function realNow(){return new Date();}
+function realTodayMidnight(){const d=new Date();d.setHours(0,0,0,0);return d;}
 function daysDiff(ds){return Math.round((new Date(ds)-TODAY)/86400000);}
 function fmtDate(ds){
   // Always show full date: "lun. 2 juin"
@@ -628,18 +685,46 @@ function getDateSlots(date){
 }
 
 function findBestSlot(task,startOffset=0){
+  // Use real wall-clock time — never the fixed TODAY constant
+  const nowDate=new Date(); // real system time on the device
+  const currentHour=nowDate.getHours()+nowDate.getMinutes()/60;
+  // Real calendar today at midnight (device time)
+  const realTodayMs=new Date(nowDate.getFullYear(),nowDate.getMonth(),nowDate.getDate()).getTime();
+
   for(let di=startOffset;di<14;di++){
     const d=new Date(TODAY);d.setDate(d.getDate()+di);
+    // Compare timestamps at midnight — bulletproof regardless of timezones
+    const dMs=new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime();
+    const isToday=(dMs===realTodayMs);
+    // isPast = this day is before today on the device calendar
+    if(dMs<realTodayMs) continue;
+
     const slots=getDateSlots(d);
     const dur=task.duration/60;
     const needsFocus=['critical','high'].includes(task.priority);
+
     for(const sl of slots){
       if(sl.t==='busy') continue;
-      const len=sl.e-sl.s;
+
+      let slotStart=sl.s;
+      if(isToday){
+        // Skip if slot already fully ended (add 5min buffer)
+        if(sl.e<=currentHour+0.083) continue;
+        // Trim slot start to current time if slot is ongoing
+        if(sl.s<currentHour+0.083){
+          // Round up to next 15min increment
+          slotStart=Math.ceil((currentHour+0.083)*4)/4;
+        }
+      }
+
+      const len=sl.e-slotStart;
       if(len<dur) continue;
-      if(sl.t==='drive'){if(task.callOk) return {day:d,start:sl.s,end:sl.s+dur,type:'drive'}; continue;}
+      if(sl.t==='drive'){
+        if(task.callOk) return {day:d,start:slotStart,end:slotStart+dur,type:'drive'};
+        continue;
+      }
       if(sl.t==='low'&&needsFocus) continue;
-      return {day:d,start:sl.s,end:sl.s+dur,type:sl.t};
+      return {day:d,start:slotStart,end:slotStart+dur,type:sl.t};
     }
   }
   return null;
@@ -866,9 +951,13 @@ function renderSettings(){
         <span style="font-size:15px;">Version</span>
         <span style="font-size:15px;color:var(--text2);">2.0</span>
       </div>
-      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:15px;">Données</span>
         <span style="font-size:15px;color:var(--text2);">Stockées localement</span>
+      </div>
+      <div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:15px;">Modèle IA</span>
+        <span style="font-size:13px;color:var(--text2);">${localStorage.getItem('pa_working_model')||'Auto-détecté'}</span>
       </div>
     </div>
 
