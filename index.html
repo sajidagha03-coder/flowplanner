@@ -12,99 +12,95 @@
 <link rel="apple-touch-icon" href="icon-192.svg"/>
 <style>
 :root {
-  --bg: #ffffff; --bg2: #f5f5f7; --bg3: #ebebed;
-  --text: #1a1a1a; --text2: #6e6e73; --text3: #aeaeb2;
-  --border: rgba(0,0,0,0.10); --border2: rgba(0,0,0,0.18);
-  --blue: #0071e3; --blue-bg: #e8f1fb; --blue-text: #004a99;
-  --green: #34c759; --green-bg: #e8f8ed; --green-text: #1a6b30;
-  --red: #ff3b30; --red-bg: #fff0ef; --red-text: #8b1f18;
-  --orange: #ff9500; --orange-bg: #fff5e6; --orange-text: #7a4500;
-  --purple: #af52de; --purple-bg: #f5eeff; --purple-text: #5c1f8a;
-  --teal: #32ade6; --teal-bg: #e5f7fd; --teal-text: #0a5c7a;
-  --radius: 12px; --radius-sm: 8px; --radius-xs: 6px;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --tab-h: 60px;
+  --bg:#ffffff;--bg2:#f5f5f7;--bg3:#e5e5ea;
+  --text:#1a1a1a;--text2:#6e6e73;--text3:#aeaeb2;
+  --border:rgba(0,0,0,0.10);--border2:rgba(0,0,0,0.18);
+  --blue:#0071e3;--blue-bg:#e8f1fb;--blue-text:#004a99;
+  --green:#34c759;--green-bg:#e8f8ed;--green-text:#1a6b30;
+  --red:#ff3b30;--red-bg:#fff0ef;--red-text:#8b1f18;
+  --orange:#ff9500;--orange-bg:#fff5e6;--orange-text:#7a4500;
+  --purple:#af52de;--purple-bg:#f5eeff;--purple-text:#5c1f8a;
+  --teal:#32ade6;--teal-bg:#e5f7fd;--teal-text:#0a5c7a;
+  --radius:12px;--radius-sm:8px;--radius-xs:6px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --tab-h:58px;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1c1c1e; --bg2: #2c2c2e; --bg3: #3a3a3c;
-    --text: #f5f5f7; --text2: #aeaeb2; --text3: #6e6e73;
-    --border: rgba(255,255,255,0.10); --border2: rgba(255,255,255,0.18);
-    --blue: #0a84ff; --blue-bg: #001f3f; --blue-text: #6eb4ff;
-    --green: #30d158; --green-bg: #0a2e14; --green-text: #6ddc8a;
-    --red: #ff453a; --red-bg: #2e0a08; --red-text: #ff6b63;
-    --orange: #ff9f0a; --orange-bg: #2e1e00; --orange-text: #ffbc5c;
-    --purple: #bf5af2; --purple-bg: #1e0a2e; --purple-text: #d48cf7;
-    --teal: #5ac8fa; --teal-bg: #002233; --teal-text: #7dd8fc;
-  }
-}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;
+  --text:#f5f5f7;--text2:#aeaeb2;--text3:#6e6e73;
+  --border:rgba(255,255,255,0.10);--border2:rgba(255,255,255,0.18);
+  --blue:#0a84ff;--blue-bg:#001f3f;--blue-text:#6eb4ff;
+  --green:#30d158;--green-bg:#0a2e14;--green-text:#6ddc8a;
+  --red:#ff453a;--red-bg:#2e0a08;--red-text:#ff6b63;
+  --orange:#ff9f0a;--orange-bg:#2e1e00;--orange-text:#ffbc5c;
+  --purple:#bf5af2;--purple-bg:#1e0a2e;--purple-text:#d48cf7;
+  --teal:#5ac8fa;--teal-bg:#002233;--teal-text:#7dd8fc;
+}}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;}
 body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 
-/* Layout */
 .app{display:flex;flex-direction:column;height:100%;padding-top:var(--safe-top);}
 .header{padding:12px 16px 8px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.header-left{display:flex;flex-direction:column;}
 .header-title{font-size:17px;font-weight:600;letter-spacing:-0.3px;}
 .header-sub{font-size:12px;color:var(--text2);margin-top:1px;}
 .header-right{display:flex;gap:8px;align-items:center;}
 .icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--text);}
 .icon-btn:active{opacity:0.6;}
+.back-btn{display:flex;align-items:center;gap:4px;font-size:15px;color:var(--blue);background:none;border:none;cursor:pointer;padding:0;}
 
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + var(--safe-bottom) + 8px);}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--tab-h) + var(--safe-bottom) + 12px);}
 
-/* Tab bar */
-.tabbar{height:var(--tab-h);padding-bottom:var(--safe-bottom);background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:stretch;flex-shrink:0;position:relative;z-index:10;}
-.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-size:10px;font-weight:500;transition:color 0.15s;padding-bottom:2px;}
+/* Tabbar */
+.tabbar{height:var(--tab-h);padding-bottom:var(--safe-bottom);background:var(--bg);border-top:0.5px solid var(--border);display:flex;align-items:stretch;flex-shrink:0;z-index:10;}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;border:none;background:transparent;color:var(--text3);font-size:9px;font-weight:500;transition:color 0.15s;padding-bottom:2px;}
 .tab-item.active{color:var(--blue);}
 .tab-item svg{width:22px;height:22px;stroke-width:1.8;}
 
-/* Cards */
-.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);margin:0 12px 8px;overflow:hidden;}
-.card-section{padding:0 12px;}
-.card-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);min-height:44px;}
-.card-row:last-child{border-bottom:none;}
-.row-icon{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.row-label{flex:1;font-size:15px;}
-.row-label-sm{flex:1;font-size:13px;color:var(--text2);}
-.row-value{font-size:15px;color:var(--text2);}
-.row-chevron{color:var(--text3);font-size:18px;margin-left:4px;}
+/* Planning view toggle */
+.seg-ctrl{display:flex;background:var(--bg3);border-radius:9px;padding:2px;margin:12px 12px 4px;}
+.seg-btn{flex:1;padding:6px;font-size:13px;font-weight:500;border:none;border-radius:7px;background:transparent;color:var(--text2);cursor:pointer;transition:all 0.15s;}
+.seg-btn.active{background:var(--bg);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.12);}
 
-/* Section headers */
-.section-header{padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;}
-
-/* Badges / priority */
-.badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap;}
-.p-critical{background:var(--red-bg);color:var(--red-text);}
-.p-high{background:var(--orange-bg);color:var(--orange-text);}
-.p-medium{background:var(--blue-bg);color:var(--blue-text);}
-.p-low{background:var(--green-bg);color:var(--green-text);}
-.p-bar-critical{background:var(--red);}
-.p-bar-high{background:var(--orange);}
-.p-bar-medium{background:var(--blue);}
-.p-bar-low{background:var(--green);}
+/* Timeline */
+.tl-block{margin:0 12px 8px;border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);}
+.tl-day-hdr{background:var(--bg2);padding:8px 14px;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;border-bottom:0.5px solid var(--border);}
+.tl-row{display:flex;gap:10px;align-items:flex-start;padding:9px 14px;border-bottom:0.5px solid var(--border);background:var(--bg);}
+.tl-row:last-child{border-bottom:none;}
+.tl-time{font-size:11px;color:var(--text3);width:42px;flex-shrink:0;padding-top:3px;font-variant-numeric:tabular-nums;}
+.tl-bar{width:3px;border-radius:2px;flex-shrink:0;align-self:stretch;min-height:36px;}
+.tl-content{flex:1;min-width:0;}
+.tl-name{font-size:14px;font-weight:500;line-height:1.3;}
+.tl-sub{font-size:12px;color:var(--text2);margin-top:2px;}
+.tl-empty{padding:16px 14px;font-size:13px;color:var(--text3);font-style:italic;}
 
 /* Task cards */
+.card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius);margin:0 12px 8px;overflow:hidden;}
 .task-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;background:var(--bg);}
 .task-item:last-child{border-bottom:none;}
 .task-item:active{background:var(--bg2);}
 .task-left{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:2px;}
-.task-pbar{width:3px;height:32px;border-radius:2px;flex-shrink:0;}
+.task-pbar{width:3px;height:36px;border-radius:2px;flex-shrink:0;}
 .task-body{flex:1;min-width:0;}
-.task-title{font-size:15px;font-weight:500;line-height:1.3;margin-bottom:4px;}
+.task-title{font-size:15px;font-weight:500;line-height:1.3;margin-bottom:5px;}
 .task-title.done{text-decoration:line-through;color:var(--text3);}
 .task-meta{display:flex;flex-wrap:wrap;gap:5px;align-items:center;}
-.meta-pill{font-size:11px;padding:2px 7px;border-radius:10px;background:var(--bg2);color:var(--text2);}
-.meta-pill.overdue{background:var(--red-bg);color:var(--red-text);}
-.meta-pill.today{background:var(--orange-bg);color:var(--orange-text);}
-.meta-pill.drive{background:var(--orange-bg);color:var(--orange-text);}
-.meta-pill.team{background:var(--purple-bg);color:var(--purple-text);}
-.task-status-row{display:flex;gap:6px;margin-top:8px;}
-.status-btn{flex:1;padding:5px 4px;font-size:11px;border-radius:var(--radius-xs);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;text-align:center;font-weight:500;}
-.status-btn.active-done{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
-.status-btn.active-defer{background:var(--orange-bg);color:var(--orange-text);border-color:transparent;}
-.status-btn.active-more{background:var(--blue-bg);color:var(--blue-text);border-color:transparent;}
+.pill{font-size:11px;padding:2px 7px;border-radius:10px;background:var(--bg2);color:var(--text2);white-space:nowrap;}
+.pill.overdue{background:var(--red-bg);color:var(--red-text);}
+.pill.today{background:var(--orange-bg);color:var(--orange-text);}
+.pill.soon{background:var(--blue-bg);color:var(--blue-text);}
+.pill.team{background:var(--purple-bg);color:var(--purple-text);}
+.pill.slot-free{background:var(--green-bg);color:var(--green-text);}
+.pill.slot-drive{background:var(--orange-bg);color:var(--orange-text);}
+.pill.slot-low{background:var(--teal-bg);color:var(--teal-text);}
+.pill.slot-none{background:var(--red-bg);color:var(--red-text);}
+.task-status-row{display:flex;gap:5px;margin-top:8px;}
+.status-btn{flex:1;padding:5px 2px;font-size:11px;border-radius:var(--radius-xs);border:0.5px solid var(--border2);background:var(--bg2);color:var(--text2);cursor:pointer;text-align:center;font-weight:500;}
+.status-btn.s-done{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
+.status-btn.s-defer{background:var(--orange-bg);color:var(--orange-text);border-color:transparent;}
+.status-btn.s-more{background:var(--blue-bg);color:var(--blue-text);border-color:transparent;}
 
 /* Check circle */
 .check-circle{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;}
@@ -112,153 +108,127 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 .check-circle svg{width:12px;height:12px;stroke:white;stroke-width:2.5;display:none;}
 .check-circle.done svg{display:block;}
 
-/* Slot pill */
-.slot-pill{display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 7px;border-radius:10px;}
-.slot-pill.free{background:var(--green-bg);color:var(--green-text);}
-.slot-pill.drive{background:var(--orange-bg);color:var(--orange-text);}
-.slot-pill.low{background:var(--teal-bg);color:var(--teal-text);}
-.slot-pill.none{background:var(--red-bg);color:var(--red-text);}
-
-/* Bottom sheet / modal */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;display:flex;align-items:flex-end;opacity:0;transition:opacity 0.25s;pointer-events:none;}
-.overlay.open{opacity:1;pointer-events:all;}
-.sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:0 0 calc(16px + var(--safe-bottom));width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);}
-.overlay.open .sheet{transform:translateY(0);}
-.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bg3);margin:10px auto 16px;}
-.sheet-title{font-size:17px;font-weight:600;padding:0 16px 12px;border-bottom:0.5px solid var(--border);}
-.sheet-body{padding:16px;}
-.form-field{margin-bottom:14px;}
-.form-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em;}
-.form-input{width:100%;padding:11px 12px;font-size:15px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none;}
-.form-input:focus{border-color:var(--blue);}
-.form-select{width:100%;padding:11px 12px;font-size:15px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none;}
-.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btn-primary{width:100%;padding:14px;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);background:var(--blue);color:white;cursor:pointer;margin-top:4px;}
-.btn-primary:active{opacity:0.8;}
-.btn-danger{width:100%;padding:12px;font-size:15px;font-weight:500;border:none;border-radius:var(--radius);background:var(--red-bg);color:var(--red-text);cursor:pointer;margin-top:8px;}
-.btn-secondary{width:100%;padding:12px;font-size:15px;font-weight:500;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text);cursor:pointer;margin-top:8px;}
-
-/* Stat cards */
+/* Stats */
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 12px 4px;}
-.stat-card{background:var(--bg2);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;}
+.stat-card{background:var(--bg2);border-radius:var(--radius-sm);padding:10px 6px;text-align:center;}
 .stat-val{font-size:22px;font-weight:600;line-height:1;}
-.stat-lbl{font-size:10px;color:var(--text2);margin-top:3px;}
-.stat-val.red{color:var(--red);} .stat-val.orange{color:var(--orange);} .stat-val.green{color:var(--green);} .stat-val.blue{color:var(--blue);}
+.stat-lbl{font-size:10px;color:var(--text2);margin-top:3px;line-height:1.2;}
+.stat-val.red{color:var(--red);}.stat-val.orange{color:var(--orange);}.stat-val.green{color:var(--green);}.stat-val.blue{color:var(--blue);}
 
-/* Filter chips */
-.chips{display:flex;gap:7px;padding:8px 12px 4px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+/* Chips filter */
+.chips{display:flex;gap:7px;padding:8px 12px 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
 .chips::-webkit-scrollbar{display:none;}
 .chip{padding:5px 12px;font-size:13px;font-weight:500;border-radius:20px;border:0.5px solid var(--border2);background:var(--bg);color:var(--text2);white-space:nowrap;cursor:pointer;flex-shrink:0;}
 .chip.active{background:var(--blue);color:white;border-color:transparent;}
 
+/* Section header */
+.sec-hdr{padding:16px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;}
+
 /* AI panel */
-.ai-panel{margin:0 12px 8px;background:var(--blue-bg);border-radius:var(--radius);padding:12px 14px;}
-.ai-title{font-size:12px;font-weight:600;color:var(--blue-text);margin-bottom:6px;display:flex;align-items:center;gap:5px;}
-.ai-text{font-size:13px;line-height:1.6;color:var(--text);white-space:pre-wrap;}
-.ai-loading{display:flex;gap:5px;align-items:center;}
-.dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:p 1.2s infinite;}
+.ai-panel{margin:0 12px 10px;background:var(--blue-bg);border-radius:var(--radius);padding:12px 14px;}
+.ai-title{font-size:12px;font-weight:600;color:var(--blue-text);margin-bottom:6px;}
+.ai-text{font-size:13px;line-height:1.65;color:var(--text);white-space:pre-wrap;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--blue);animation:pp 1.2s infinite;display:inline-block;margin:0 2px;}
 .dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
-@keyframes p{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@keyframes pp{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
-/* Timeline */
-.tl-day{margin-bottom:4px;}
-.tl-day-label{font-size:13px;font-weight:600;color:var(--text2);padding:12px 16px 6px;}
-.tl-row{display:flex;gap:10px;padding:8px 14px;border-bottom:0.5px solid var(--border);background:var(--bg);}
-.tl-time{font-size:11px;color:var(--text3);width:36px;flex-shrink:0;padding-top:3px;}
-.tl-bar{width:3px;border-radius:2px;flex-shrink:0;min-height:36px;}
-.tl-content{flex:1;}
-.tl-name{font-size:14px;font-weight:500;}
-.tl-sub{font-size:12px;color:var(--text2);margin-top:2px;}
-
-/* Meeting blocker */
-.block-row{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:0.5px solid var(--border);}
-.block-time{font-size:13px;color:var(--text2);width:90px;flex-shrink:0;}
-.block-name{flex:1;font-size:14px;}
-.block-del{font-size:20px;color:var(--text3);cursor:pointer;padding:4px;}
-
-/* Projects screen */
-.proj-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;background:var(--bg);}
-.proj-card:active{background:var(--bg2);}
-.proj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.proj-info{flex:1;}
-.proj-name{font-size:15px;font-weight:500;}
-.proj-count{font-size:12px;color:var(--text2);margin-top:1px;}
-
-/* Team screen */
-.member-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;}
-.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;}
+/* Team */
+.member-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;background:var(--bg);}
+.member-card:last-child{border-bottom:none;}
+.member-card:active{background:var(--bg2);}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
 .member-info{flex:1;}
 .member-name{font-size:15px;font-weight:500;}
-.member-tasks{font-size:12px;color:var(--text2);margin-top:1px;}
-.member-alert{font-size:11px;padding:2px 7px;border-radius:10px;background:var(--red-bg);color:var(--red-text);}
+.member-meta{font-size:12px;color:var(--text2);margin-top:2px;}
+.alert-badge{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--red-bg);color:var(--red-text);}
 
-/* Follow-up */
-.fu-box{margin:12px;background:var(--bg2);border-radius:var(--radius);overflow:hidden;}
-.fu-textarea{width:100%;padding:12px;font-size:14px;border:none;background:transparent;color:var(--text);font-family:inherit;resize:none;outline:none;min-height:90px;}
-.fu-footer{display:flex;align-items:center;justify-content:flex-end;padding:8px 12px;border-top:0.5px solid var(--border);}
-.fu-btn{padding:7px 16px;font-size:13px;font-weight:600;border:none;border-radius:var(--radius-sm);background:var(--blue);color:white;cursor:pointer;}
+/* Projects */
+.proj-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:0.5px solid var(--border);cursor:pointer;}
+.proj-card:last-child{border-bottom:none;}
+.proj-card:active{background:var(--bg2);}
+.proj-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.proj-info{flex:1;}
+.proj-name{font-size:15px;font-weight:500;}
+.proj-meta{font-size:12px;color:var(--text2);margin-top:2px;}
 
-/* Color picker */
-.color-grid{display:flex;gap:10px;flex-wrap:wrap;}
-.color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid transparent;}
-.color-swatch.selected{border-color:var(--text);}
+/* Notes (followup) */
+.fu-box{margin:8px 12px;background:var(--bg2);border-radius:var(--radius);overflow:hidden;border:0.5px solid var(--border);}
+.fu-textarea{width:100%;padding:12px;font-size:15px;border:none;background:transparent;color:var(--text);font-family:inherit;resize:none;outline:none;min-height:100px;}
+.fu-footer{display:flex;align-items:center;justify-content:flex-end;padding:8px 12px;border-top:0.5px solid var(--border);gap:8px;}
+.fu-btn{padding:8px 18px;font-size:13px;font-weight:600;border:none;border-radius:var(--radius-sm);background:var(--blue);color:white;cursor:pointer;}
+.fu-btn:active{opacity:0.8;}
+.fu-hint{font-size:12px;color:var(--text3);}
 
-/* Empty state */
+/* Modal / sheet */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100;display:flex;align-items:flex-end;opacity:0;transition:opacity 0.25s;pointer-events:none;}
+.overlay.open{opacity:1;pointer-events:all;}
+.sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:0 0 calc(20px + var(--safe-bottom));width:100%;max-height:92vh;overflow-y:auto;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);}
+.overlay.open .sheet{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;border-radius:2px;background:var(--bg3);margin:10px auto 14px;}
+.sheet-title{font-size:17px;font-weight:600;padding:0 16px 12px;border-bottom:0.5px solid var(--border);}
+.sheet-body{padding:16px;}
+.form-field{margin-bottom:14px;}
+.form-label{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;display:block;}
+.form-input{width:100%;padding:11px 12px;font-size:15px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none;}
+.form-input:focus{border-color:var(--blue);}
+.form-select{width:100%;padding:11px 12px;font-size:15px;border:0.5px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);color:var(--text);font-family:inherit;outline:none;-webkit-appearance:none;}
+.form-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.btn-primary{width:100%;padding:14px;font-size:16px;font-weight:600;border:none;border-radius:var(--radius);background:var(--blue);color:white;cursor:pointer;margin-top:4px;}
+.btn-primary:active{opacity:0.8;}
+.btn-danger{width:100%;padding:12px;font-size:15px;font-weight:500;border:none;border-radius:var(--radius);background:var(--red-bg);color:var(--red-text);cursor:pointer;margin-top:8px;}
+.btn-secondary{width:100%;padding:12px;font-size:15px;font-weight:500;border:0.5px solid var(--border2);border-radius:var(--radius);background:transparent;color:var(--text);cursor:pointer;margin-top:8px;}
+.color-grid{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+.color-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform 0.1s;}
+.color-swatch.selected{border-color:var(--text);transform:scale(1.1);}
+
 .empty{text-align:center;padding:48px 24px;color:var(--text2);}
-.empty-icon{font-size:40px;margin-bottom:10px;}
+.empty-icon{font-size:36px;margin-bottom:10px;}
 .empty-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:6px;}
 .empty-sub{font-size:14px;line-height:1.5;}
-
-/* Notification badge */
-.notif-dot{width:8px;height:8px;border-radius:50%;background:var(--red);position:absolute;top:4px;right:4px;}
-
-/* Install banner */
-.install-banner{margin:8px 12px;background:var(--blue-bg);border-radius:var(--radius);padding:12px 14px;display:flex;align-items:center;gap:10px;}
-.install-text{flex:1;font-size:13px;color:var(--blue-text);line-height:1.4;}
-.install-close{font-size:20px;color:var(--text3);cursor:pointer;padding:4px;}
-
-.hidden{display:none!important;}
 .ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* install banner */
+.install-banner{margin:8px 12px 0;background:var(--blue-bg);border-radius:var(--radius);padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.install-text{flex:1;font-size:12px;color:var(--blue-text);line-height:1.4;}
+.install-close{font-size:22px;color:var(--text3);cursor:pointer;padding:2px 4px;line-height:1;}
 </style>
 </head>
 <body>
 <div class="app">
   <div class="header" id="main-header">
-    <div>
+    <div class="header-left">
       <div class="header-title" id="header-title">FlowPlanner</div>
       <div class="header-sub" id="header-sub"></div>
     </div>
-    <div class="header-right">
-      <button class="icon-btn" id="ai-btn" onclick="triggerAI()" title="Prioriser avec l'IA">🧠</button>
-      <button class="icon-btn" id="add-btn" onclick="openAddModal()" title="Ajouter">＋</button>
+    <div class="header-right" id="header-right">
+      <button class="icon-btn" id="ai-btn" onclick="triggerAI()" style="display:none" title="IA">🧠</button>
+      <button class="icon-btn" id="add-btn" onclick="openAddModal()" style="display:none" title="Ajouter">＋</button>
     </div>
   </div>
   <div class="screen" id="screen"></div>
-  <div class="tabbar">
-    <button class="tab-item active" onclick="switchTab('tasks')" id="tab-tasks">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
-      Tâches
-    </button>
-    <button class="tab-item" onclick="switchTab('planning')" id="tab-planning">
+  <div class="tabbar" id="tabbar">
+    <button class="tab-item active" onclick="switchTab('planning')" id="tab-planning">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       Planning
     </button>
-    <button class="tab-item" onclick="switchTab('projects')" id="tab-projects">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 7h18M3 12h18M3 17h18"/><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="7" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/></svg>
-      Projets
+    <button class="tab-item" onclick="switchTab('tasks')" id="tab-tasks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="7" y1="9" x2="17" y2="9"/><line x1="7" y1="13" x2="13" y2="13"/></svg>
+      Tâches
     </button>
     <button class="tab-item" onclick="switchTab('team')" id="tab-team">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.314 2.686-6 6-6s6 2.686 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M15 20c0-2.761 1.343-5 3-5s3 2.239 3 5"/></svg>
       Équipe
     </button>
-    <button class="tab-item" onclick="switchTab('followup')" id="tab-followup">
+    <button class="tab-item" onclick="switchTab('notes')" id="tab-notes">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      Suivi
+      Notes
+    </button>
+    <button class="tab-item" onclick="switchTab('projects')" id="tab-projects">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      Projets
     </button>
   </div>
 </div>
-
-<!-- Modal overlay -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
   <div class="sheet" id="sheet">
     <div class="sheet-handle"></div>
@@ -268,59 +238,79 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 </div>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────
-const COLORS = ['#FF3B30','#FF9500','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#32ADE6','#00C7BE','#A2845E'];
+// ─── DATA ──────────────────────────────────────────────────────────────────
+const COLORS=['#FF3B30','#FF9500','#34C759','#007AFF','#5856D6','#AF52DE','#FF2D55','#32ADE6','#00C7BE','#A2845E'];
 
-function load(k, def) { try { const v=localStorage.getItem(k); return v?JSON.parse(v):def; } catch(e){ return def; } }
-function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+function load(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def;}catch(e){return def;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 
-let projects = load('fp_projects', [
-  {id:'p1', name:'LevéeFonds', color:'#007AFF'},
-  {id:'p2', name:'TechOps', color:'#5856D6'},
-  {id:'p3', name:'Marketing', color:'#FF9500'},
-  {id:'p4', name:'Finance', color:'#34C759'},
-  {id:'p5', name:'Produit', color:'#AF52DE'},
+let projects=load('fp_projects',[
+  {id:'p1',name:'LevéeFonds',color:'#007AFF'},
+  {id:'p2',name:'TechOps',color:'#5856D6'},
+  {id:'p3',name:'Marketing',color:'#FF9500'},
+  {id:'p4',name:'Finance',color:'#34C759'},
+  {id:'p5',name:'Produit',color:'#AF52DE'},
 ]);
-
-let members = load('fp_members', [
-  {id:'m1', name:'Sophie Martin', initials:'SM', color:'#FF2D55'},
-  {id:'m2', name:'Lucas Bernard', initials:'LB', color:'#5856D6'},
-  {id:'m3', name:'Camille Dupont', initials:'CD', color:'#FF9500'},
+let members=load('fp_members',[
+  {id:'m1',name:'Sophie Martin',initials:'SM',color:'#FF2D55'},
+  {id:'m2',name:'Lucas Bernard',initials:'LB',color:'#5856D6'},
+  {id:'m3',name:'Camille Dupont',initials:'CD',color:'#FF9500'},
 ]);
-
-let tasks = load('fp_tasks', [
+let tasks=load('fp_tasks',[
   {id:'t1',title:"Préparer deck investisseurs Q3",projectId:'p1',priority:"critical",deadline:"2025-06-02",duration:180,done:false,notes:"Slides, financials, story",callOk:false,assignedTo:'me',status:'todo'},
   {id:'t2',title:"Valider contrat prestataire dev",projectId:'p2',priority:"high",deadline:"2025-06-04",duration:45,done:false,notes:"Relire clauses IP",callOk:false,assignedTo:'me',status:'todo'},
   {id:'t3',title:"Call équipe marketing",projectId:'p3',priority:"medium",deadline:"2025-06-03",duration:60,done:false,notes:"",callOk:true,assignedTo:'me',status:'todo'},
   {id:'t4',title:"Envoyer factures en attente",projectId:'p4',priority:"high",deadline:"2025-06-01",duration:30,done:false,notes:"Clients: Acme, BetaCo",callOk:false,assignedTo:'me',status:'todo'},
   {id:'t5',title:"Review code release v2.1",projectId:'p2',priority:"medium",deadline:"2025-06-06",duration:90,done:false,notes:"",callOk:false,assignedTo:'m2',status:'todo'},
   {id:'t6',title:"Mise à jour roadmap produit",projectId:'p5',priority:"low",deadline:"2025-06-10",duration:120,done:false,notes:"",callOk:false,assignedTo:'me',status:'todo'},
-  {id:'t7',title:"Préparer brief campagne été",projectId:'p3',priority:"medium",deadline:"2025-06-05",duration:60,done:false,notes:"",callOk:false,assignedTo:'m1',status:'todo'},
+  {id:'t7',title:"Brief campagne été",projectId:'p3',priority:"medium",deadline:"2025-06-05",duration:60,done:false,notes:"",callOk:false,assignedTo:'m1',status:'todo'},
   {id:'t8',title:"Relancer prospect Eurotech",projectId:'p1',priority:"high",deadline:"2025-06-02",duration:20,done:false,notes:"",callOk:true,assignedTo:'me',status:'todo'},
 ]);
+let adHocMeetings=load('fp_meetings',[]);
+let aiResponse=load('fp_ai','');
+let nextId=load('fp_nextid',200);
+let currentTab='planning';
+let planningView='day'; // 'day' | 'week'
+let filterPriority='all';
+let filterProject='all';
+let filterAssignee='all';
+let viewingMemberId=null;
+let showInstall=!load('fp_install_dismissed',false);
 
-let adHocMeetings = load('fp_meetings', []);
-let nextId = load('fp_nextid', 100);
-let aiResponse = load('fp_ai', '');
-let currentTab = 'tasks';
-let filterPriority = 'all';
-let filterProject = 'all';
-let filterAssignee = 'all';
-let showInstall = !load('fp_install_dismissed', false);
+function saveAll(){
+  save('fp_projects',projects);save('fp_members',members);save('fp_tasks',tasks);
+  save('fp_meetings',adHocMeetings);save('fp_ai',aiResponse);save('fp_nextid',nextId);
+}
+function genId(){return 'id'+(nextId++);}
 
-function saveAll() {
-  save('fp_projects', projects);
-  save('fp_members', members);
-  save('fp_tasks', tasks);
-  save('fp_meetings', adHocMeetings);
-  save('fp_nextid', nextId);
-  save('fp_ai', aiResponse);
+// ─── DATE/SCHEDULE ENGINE ─────────────────────────────────────────────────
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+function todayStr(){return TODAY.toISOString().slice(0,10);}
+function daysDiff(ds){return Math.round((new Date(ds)-TODAY)/86400000);}
+function fmtDate(ds){
+  // Always show full date: "lun. 2 juin"
+  const d=new Date(ds);
+  const diff=daysDiff(ds);
+  const weekdays=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const months=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+  const wd=weekdays[d.getDay()];
+  const day=d.getDate();
+  const mo=months[d.getMonth()];
+  let prefix='';
+  if(diff<0) prefix='⚠ ';
+  else if(diff===0) prefix='🔴 ';
+  else if(diff===1) prefix='🟡 ';
+  return `${prefix}${wd} ${day} ${mo}`;
+}
+function deadlineCls(ds){
+  const d=daysDiff(ds);
+  if(d<0) return 'overdue';
+  if(d===0) return 'today';
+  if(d<=2) return 'soon';
+  return '';
 }
 
-// ─── SCHEDULE ENGINE ────────────────────────────────────
-const TODAY = new Date(); TODAY.setHours(0,0,0,0);
-
-const BASE_WEEK = {
+const BASE_WEEK={
   1:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:9.5,t:'free'},{s:9.5,e:13,t:'busy'},{s:13,e:13.5,t:'drive'},{s:13.5,e:14.5,t:'busy'},{s:14.5,e:20,t:'free'},{s:20,e:24,t:'busy'}]},
   2:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:18.5,t:'free'},{s:18.5,e:19.5,t:'drive'},{s:19.5,e:24,t:'busy'}]},
   3:{slots:[{s:8,e:8.5,t:'drive'},{s:8.5,e:19.5,t:'free'},{s:19.5,e:24,t:'busy'}]},
@@ -330,636 +320,718 @@ const BASE_WEEK = {
   0:{slots:[{s:9,e:9.5,t:'free'},{s:9.5,e:10.75,t:'drive'},{s:10.75,e:13.5,t:'free'},{s:13.5,e:24,t:'busy'}]},
 };
 
-function getDateSlots(date) {
-  const dow = date.getDay();
-  const base = JSON.parse(JSON.stringify(BASE_WEEK[dow]?.slots || []));
-  // inject ad hoc meetings for this date
-  const dStr = date.toISOString().slice(0,10);
-  const meetings = adHocMeetings.filter(m => m.date === dStr);
-  meetings.forEach(m => {
-    const mS = m.start, mE = m.end;
-    const newSlots = [];
-    base.forEach(sl => {
-      if (sl.e <= mS || sl.s >= mE) { newSlots.push(sl); return; }
-      if (sl.s < mS) newSlots.push({s:sl.s, e:mS, t:sl.t});
-      newSlots.push({s:mS, e:mE, t:'busy'});
-      if (sl.e > mE) newSlots.push({s:mE, e:sl.e, t:sl.t});
+function getDateSlots(date){
+  const dow=date.getDay();
+  const base=JSON.parse(JSON.stringify(BASE_WEEK[dow]?.slots||[]));
+  const dStr=date.toISOString().slice(0,10);
+  adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+    const mS=m.start,mE=m.end;
+    const out=[];
+    base.forEach(sl=>{
+      if(sl.e<=mS||sl.s>=mE){out.push(sl);return;}
+      if(sl.s<mS) out.push({s:sl.s,e:mS,t:sl.t});
+      out.push({s:mS,e:mE,t:'busy'});
+      if(sl.e>mE) out.push({s:mE,e:sl.e,t:sl.t});
     });
-    base.length = 0; newSlots.forEach(s => base.push(s));
+    base.length=0;out.forEach(s=>base.push(s));
   });
+  // merge consecutive same-type slots & sort
+  base.sort((a,b)=>a.s-b.s);
   return base;
 }
 
-function findBestSlot(task, startOffset=0) {
-  for (let di = startOffset; di < 14; di++) {
-    const d = new Date(TODAY); d.setDate(d.getDate()+di);
-    const slots = getDateSlots(d);
-    const dur = task.duration / 60;
-    const needsFocus = ['critical','high'].includes(task.priority);
-    for (const sl of slots) {
-      const len = sl.e - sl.s;
-      if (len < dur) continue;
-      if (sl.t === 'busy') continue;
-      if (sl.t === 'drive') { if (task.callOk) return {day:d, start:sl.s, end:sl.s+dur, type:'drive'}; continue; }
-      if (sl.t === 'low' && needsFocus) continue;
-      return {day:d, start:sl.s, end:sl.s+dur, type:sl.t};
+function findBestSlot(task,startOffset=0){
+  for(let di=startOffset;di<14;di++){
+    const d=new Date(TODAY);d.setDate(d.getDate()+di);
+    const slots=getDateSlots(d);
+    const dur=task.duration/60;
+    const needsFocus=['critical','high'].includes(task.priority);
+    for(const sl of slots){
+      if(sl.t==='busy') continue;
+      const len=sl.e-sl.s;
+      if(len<dur) continue;
+      if(sl.t==='drive'){if(task.callOk) return {day:d,start:sl.s,end:sl.s+dur,type:'drive'}; continue;}
+      if(sl.t==='low'&&needsFocus) continue;
+      return {day:d,start:sl.s,end:sl.s+dur,type:sl.t};
     }
   }
   return null;
 }
 
-function fmtSlot(slot) {
-  if (!slot) return {label:'Aucun créneau', cls:'none'};
-  const isToday = slot.day.toDateString() === TODAY.toDateString();
-  const tom = new Date(TODAY); tom.setDate(tom.getDate()+1);
-  const isTom = slot.day.toDateString() === tom.toDateString();
-  const days = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-  const dayStr = isToday ? "Auj." : isTom ? "Dem." : days[slot.day.getDay()];
-  const h = Math.floor(slot.start), m = Math.round((slot.start-h)*60);
-  const t = `${String(h).padStart(2,'0')}h${m?String(m).padStart(2,'0'):''}`;
-  const suffix = slot.type==='drive'?' 🚗':slot.type==='low'?' (dispo)':'';
-  return {label:`${dayStr} ${t}${suffix}`, cls:slot.type==='drive'?'drive':slot.type==='low'?'low':'free'};
+function fmtH(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return `${String(hh).padStart(2,'0')}h${mm?String(mm).padStart(2,'0'):''}`;}
+function fmtDur(m){return m>=60?Math.floor(m/60)+'h'+(m%60?m%60+'m':''):m+'min';}
+function fmtSlotPill(slot){
+  if(!slot) return {label:'Aucun créneau',cls:'slot-none'};
+  const isToday=slot.day.toDateString()===TODAY.toDateString();
+  const tom=new Date(TODAY);tom.setDate(tom.getDate()+1);
+  const isTom=slot.day.toDateString()===tom.toDateString();
+  const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const dayStr=isToday?'Auj.':isTom?'Dem.':days[slot.day.getDay()];
+  const suffix=slot.type==='drive'?' 🚗':slot.type==='low'?' (dispo)':'';
+  return {label:`${dayStr} ${fmtH(slot.start)}${suffix}`,cls:slot.type==='drive'?'slot-drive':slot.type==='low'?'slot-low':'slot-free'};
 }
-
-// ─── HELPERS ────────────────────────────────────────────
-function daysDiff(ds) { return Math.round((new Date(ds)-TODAY)/86400000); }
-function fmtDeadline(ds) {
-  const d = daysDiff(ds);
-  if (d<0) return {label:`Retard ${Math.abs(d)}j`, cls:'overdue'};
-  if (d===0) return {label:"Aujourd'hui", cls:'today'};
-  if (d===1) return {label:"Demain", cls:''};
-  return {label:`Dans ${d}j`, cls:''};
-}
-function fmtDur(m) { return m>=60 ? Math.floor(m/60)+'h'+(m%60?m%60+'m':'') : m+'min'; }
-function score(t) {
+function score(t){
   const u={critical:4,high:3,medium:2,low:1}[t.priority];
   const d=daysDiff(t.deadline);
   const ds=d<0?10:d===0?8:d<=2?6:d<=5?3:1;
   return u*2+ds;
 }
-function projById(id) { return projects.find(p=>p.id===id)||{name:'?',color:'#aaa'}; }
-function memberById(id) { return id==='me'?{name:'Moi',initials:'Moi',color:'#007AFF'}:members.find(m=>m.id===id)||{name:'?',initials:'?',color:'#aaa'}; }
-function genId() { return 'id'+(nextId++); }
-function todayStr() { return TODAY.toISOString().slice(0,10); }
+function projById(id){return projects.find(p=>p.id===id)||{name:'?',color:'#aaa'};}
+function memberById(id){return id==='me'?{name:'Moi',initials:'Moi',color:'#007AFF'}:members.find(m=>m.id===id)||{name:'?',initials:'?',color:'#aaa'};}
 
-// ─── TAB SWITCHING ───────────────────────────────────────
-function switchTab(tab) {
-  currentTab = tab;
+// ─── TAB SWITCH ──────────────────────────────────────────────────────────
+function switchTab(tab){
+  currentTab=tab;
+  viewingMemberId=null;
+  filterPriority='all';filterProject='all';filterAssignee='all';
   document.querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+tab)?.classList.add('active');
-  filterPriority='all'; filterProject='all'; filterAssignee='all';
+  const el=document.getElementById('tab-'+tab);
+  if(el) el.classList.add('active');
   render();
 }
 
-// ─── RENDER ─────────────────────────────────────────────
-function render() {
-  updateHeader();
-  if (currentTab==='tasks') renderTasks();
-  else if (currentTab==='planning') renderPlanning();
-  else if (currentTab==='projects') renderProjects();
-  else if (currentTab==='team') renderTeam();
-  else if (currentTab==='followup') renderFollowup();
-}
+// ─── HEADER ──────────────────────────────────────────────────────────────
+function updateHeader(){
+  const titles={planning:'Planning',tasks:'Mes tâches',team:'Équipe',notes:'Notes',projects:'Projets'};
+  let title=titles[currentTab]||'FlowPlanner';
+  let sub='';
+  const aiBtn=document.getElementById('ai-btn');
+  const addBtn=document.getElementById('add-btn');
+  const headerRight=document.getElementById('header-right');
 
-function updateHeader() {
-  const titles = {tasks:'Mes tâches', planning:'Planning', projects:'Projets', team:'Équipe', followup:'Suivi réunions'};
-  document.getElementById('header-title').textContent = titles[currentTab]||'FlowPlanner';
-  const active = tasks.filter(t=>!t.done&&t.assignedTo==='me');
-  const today = active.filter(t=>daysDiff(t.deadline)<=0).length;
-  document.getElementById('header-sub').textContent = currentTab==='tasks' ? `${active.length} tâches · ${today} urgentes` : '';
-  document.getElementById('add-btn').style.display = ['tasks','projects','team','planning'].includes(currentTab)?'flex':'none';
-  document.getElementById('ai-btn').style.display = currentTab==='tasks'?'flex':'none';
-}
-
-// ─── TASKS TAB ──────────────────────────────────────────
-function renderTasks() {
-  let filtered = tasks.filter(t => {
-    if (filterPriority !== 'all' && t.priority !== filterPriority) return false;
-    if (filterProject !== 'all' && t.projectId !== filterProject) return false;
-    if (filterAssignee !== 'all') {
-      if (filterAssignee === 'me' && t.assignedTo !== 'me') return false;
-      if (filterAssignee === 'team' && t.assignedTo === 'me') return false;
+  if(currentTab==='team'&&viewingMemberId){
+    const m=memberById(viewingMemberId);
+    title=m.name;
+    sub='Tâches assignées';
+    headerRight.innerHTML=`<button class="back-btn" onclick="backToTeam()">‹ Équipe</button><button class="icon-btn" onclick="openMemberModal('${viewingMemberId}')">✏️</button>`;
+  } else {
+    if(currentTab==='tasks'){
+      const active=tasks.filter(t=>!t.done&&t.assignedTo==='me');
+      const ov=active.filter(t=>daysDiff(t.deadline)<0).length;
+      sub=`${active.length} tâches${ov?` · ${ov} en retard`:''}`;
     }
-    return true;
+    headerRight.innerHTML=`
+      <button class="icon-btn" id="ai-btn" onclick="triggerAI()" style="display:${currentTab==='tasks'?'flex':'none'}" title="IA">🧠</button>
+      <button class="icon-btn" id="add-btn" onclick="openAddModal()" style="display:${['tasks','projects','team','planning'].includes(currentTab)?'flex':'none'}" title="Ajouter">＋</button>
+    `;
+  }
+  document.getElementById('header-title').textContent=title;
+  document.getElementById('header-sub').textContent=sub;
+}
+
+function backToTeam(){viewingMemberId=null;render();}
+
+// ─── MAIN RENDER ────────────────────────────────────────────────────────
+function render(){
+  updateHeader();
+  if(currentTab==='planning') renderPlanning();
+  else if(currentTab==='tasks') renderTasks();
+  else if(currentTab==='team') renderTeam();
+  else if(currentTab==='notes') renderNotes();
+  else if(currentTab==='projects') renderProjects();
+}
+
+// ─── PLANNING ────────────────────────────────────────────────────────────
+function renderPlanning(){
+  let html=`<div class="seg-ctrl">
+    <button class="seg-btn ${planningView==='day'?'active':''}" onclick="setPlanView('day')">Aujourd'hui</button>
+    <button class="seg-btn ${planningView==='week'?'active':''}" onclick="setPlanView('week')">Cette semaine</button>
+  </div>`;
+  if(planningView==='day') html+=renderDayView(TODAY,true);
+  else html+=renderWeekView();
+  document.getElementById('screen').innerHTML=html;
+}
+
+function setPlanView(v){planningView=v;renderPlanning();}
+
+function renderDayView(date,showAddMeeting){
+  const slots=getDateSlots(date);
+  const dStr=date.toISOString().slice(0,10);
+  const days=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months=['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  const dateLabel=`${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
+
+  // Build a chronological list of events: drive slots, ad hoc meetings, scheduled tasks
+  let events=[];
+
+  // Drive slots from base
+  slots.filter(sl=>sl.t==='drive').forEach(sl=>{
+    events.push({time:sl.s,end:sl.e,type:'drive',name:'🚗 Trajet voiture',sub:`${fmtDur(Math.round((sl.e-sl.s)*60))} · appels possibles`});
   });
-  const active = filtered.filter(t=>!t.done).sort((a,b)=>score(b)-score(a));
-  const done = filtered.filter(t=>t.done);
 
-  const overdue = tasks.filter(t=>!t.done&&daysDiff(t.deadline)<0).length;
-  const critical = tasks.filter(t=>!t.done&&t.priority==='critical').length;
-  const myCount = tasks.filter(t=>!t.done&&t.assignedTo==='me').length;
-  const teamOverdue = tasks.filter(t=>!t.done&&t.assignedTo!=='me'&&daysDiff(t.deadline)<0).length;
+  // Fixed/recurring meetings from base schedule (busy slots that are NOT drive and NOT from ad hoc)
+  // We show ad hoc meetings explicitly
+  adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+    events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60)),meetingId:m.id});
+  });
 
-  let html = '';
+  // Scheduled tasks for this day
+  const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+  // Track used time slots to avoid double-placing
+  const usedSlots=[];
+  myTasks.forEach(t=>{
+    const slot=findBestSlot(t);
+    if(!slot||slot.day.toDateString()!==date.toDateString()) return;
+    // Check not overlapping with already placed
+    const overlaps=usedSlots.some(u=>slot.start<u.end&&slot.end>u.start);
+    if(overlaps) return;
+    usedSlots.push({start:slot.start,end:slot.end});
+    const proj=projById(t.projectId);
+    events.push({time:slot.start,end:slot.end,type:'task',taskId:t.id,priority:t.priority,
+      name:t.title,sub:`${proj.name} · ${fmtDur(t.duration)} · fin ${fmtH(slot.end)}`,color:proj.color,slotType:slot.type});
+  });
 
-  if (showInstall) {
-    html += `<div class="install-banner">
-      <div class="install-text">📲 Installe cette app sur ton iPhone : Safari → Partager → Sur l'écran d'accueil</div>
-      <div class="install-close" onclick="dismissInstall()">×</div>
+  // Sort chronologically
+  events.sort((a,b)=>a.time-b.time);
+
+  let html=`<div class="sec-hdr" style="padding-top:12px;">${dateLabel}</div>`;
+  html+=`<div class="tl-block">`;
+  if(!events.length){
+    html+=`<div class="tl-empty">Aucun créneau de travail aujourd'hui</div>`;
+  }
+  events.forEach(ev=>{
+    const barColor=ev.type==='drive'?'var(--orange)':ev.type==='meeting'?'var(--red)':
+      ev.priority==='critical'?'var(--red)':ev.priority==='high'?'var(--orange)':
+      ev.priority==='medium'?'var(--blue)':'var(--green)';
+    const del=ev.meetingId?`<span style="color:var(--text3);cursor:pointer;padding:0 4px;font-size:18px;" onclick="deleteMeeting('${ev.meetingId}')">×</span>`:'';
+    html+=`<div class="tl-row">
+      <div class="tl-time">${fmtH(ev.time)}</div>
+      <div class="tl-bar" style="background:${barColor}"></div>
+      <div class="tl-content">
+        <div class="tl-name">${ev.name}</div>
+        <div class="tl-sub">${ev.sub}</div>
+      </div>
+      ${del}
+    </div>`;
+  });
+  html+=`</div>`;
+  if(showAddMeeting){
+    html+=`<div style="padding:4px 12px 8px;">
+      <button style="width:100%;padding:10px;font-size:14px;border:0.5px dashed var(--border2);border-radius:var(--radius);background:transparent;color:var(--text2);cursor:pointer;" onclick="openMeetingModal()">+ Bloquer une réunion ad hoc</button>
     </div>`;
   }
+  return html;
+}
 
-  html += `<div class="stat-row">
+function renderWeekView(){
+  let html='';
+  for(let di=0;di<7;di++){
+    const d=new Date(TODAY);d.setDate(d.getDate()+di);
+    const days=['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+    const months=['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+    const label=`${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+    const slots=getDateSlots(d);
+    const dStr=d.toISOString().slice(0,10);
+
+    // Build events for the day
+    let events=[];
+    slots.filter(sl=>sl.t==='drive').forEach(sl=>{
+      events.push({time:sl.s,end:sl.e,type:'drive',name:'🚗 Trajet',sub:`${fmtDur(Math.round((sl.e-sl.s)*60))}`});
+    });
+    adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
+      events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60))});
+    });
+    const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+    const used=[];
+    myTasks.forEach(t=>{
+      const slot=findBestSlot(t);
+      if(!slot||slot.day.toDateString()!==d.toDateString()) return;
+      if(used.some(u=>slot.start<u.end&&slot.end>u.start)) return;
+      used.push({start:slot.start,end:slot.end});
+      const proj=projById(t.projectId);
+      events.push({time:slot.start,end:slot.end,type:'task',priority:t.priority,
+        name:t.title,sub:`${proj.name} · ${fmtDur(t.duration)}`});
+    });
+    events.sort((a,b)=>a.time-b.time);
+
+    html+=`<div class="sec-hdr" style="padding-top:${di===0?'12':'4'}px;">${di===0?'Aujourd\'hui — ':di===1?'Demain — ':''}${label}</div>`;
+    html+=`<div class="tl-block">`;
+    if(!events.length){
+      html+=`<div class="tl-empty">Pas de créneau de travail</div>`;
+    }
+    events.forEach(ev=>{
+      const barColor=ev.type==='drive'?'var(--orange)':ev.type==='meeting'?'var(--red)':
+        ev.priority==='critical'?'var(--red)':ev.priority==='high'?'var(--orange)':
+        ev.priority==='medium'?'var(--blue)':'var(--green)';
+      html+=`<div class="tl-row">
+        <div class="tl-time">${fmtH(ev.time)}</div>
+        <div class="tl-bar" style="background:${barColor}"></div>
+        <div class="tl-content">
+          <div class="tl-name ellipsis">${ev.name}</div>
+          <div class="tl-sub">${ev.sub}</div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  }
+  return html;
+}
+
+// ─── TASKS ───────────────────────────────────────────────────────────────
+function renderTasks(){
+  let filtered=tasks.filter(t=>{
+    if(filterPriority!=='all'&&t.priority!==filterPriority) return false;
+    if(filterProject!=='all'&&t.projectId!==filterProject) return false;
+    if(filterAssignee==='me'&&t.assignedTo!=='me') return false;
+    if(filterAssignee==='team'&&t.assignedTo==='me') return false;
+    return true;
+  });
+  const active=filtered.filter(t=>!t.done).sort((a,b)=>score(b)-score(a));
+  const done=filtered.filter(t=>t.done);
+
+  const allActive=tasks.filter(t=>!t.done);
+  const overdue=allActive.filter(t=>daysDiff(t.deadline)<0).length;
+  const critical=allActive.filter(t=>t.priority==='critical').length;
+  const myCount=allActive.filter(t=>t.assignedTo==='me').length;
+  const teamOv=allActive.filter(t=>t.assignedTo!=='me'&&daysDiff(t.deadline)<0).length;
+
+  let html='';
+  if(showInstall){
+    html+=`<div class="install-banner"><div class="install-text">📲 Installer sur iPhone : Safari → Partager → Sur l'écran d'accueil</div><div class="install-close" onclick="dismissInstall()">×</div></div>`;
+  }
+  html+=`<div class="stat-row">
     <div class="stat-card"><div class="stat-val ${overdue?'red':''}">${overdue}</div><div class="stat-lbl">En retard</div></div>
     <div class="stat-card"><div class="stat-val ${critical?'orange':''}">${critical}</div><div class="stat-lbl">Critiques</div></div>
     <div class="stat-card"><div class="stat-val blue">${myCount}</div><div class="stat-lbl">Mes tâches</div></div>
-    <div class="stat-card"><div class="stat-val ${teamOverdue?'red':'green'}">${teamOverdue}</div><div class="stat-lbl">Équipe ⚠</div></div>
+    <div class="stat-card"><div class="stat-val ${teamOv?'red':'green'}">${teamOv}</div><div class="stat-lbl">Équipe ⚠</div></div>
   </div>`;
 
-  if (aiResponse) {
-    html += `<div class="ai-panel"><div class="ai-title">🧠 IA — Recommandation</div><div class="ai-text">${aiResponse}</div></div>`;
+  if(aiResponse){
+    html+=`<div class="ai-panel"><div class="ai-title">🧠 Recommandation IA</div><div class="ai-text">${aiResponse}</div></div>`;
   }
 
-  // Filters
-  html += `<div class="chips">
+  html+=`<div class="chips">
     <div class="chip ${filterPriority==='all'&&filterProject==='all'&&filterAssignee==='all'?'active':''}" onclick="resetFilters()">Toutes</div>
-    <div class="chip ${filterAssignee==='me'?'active':''}" onclick="setFilterAssignee('me')">Mes tâches</div>
-    <div class="chip ${filterAssignee==='team'?'active':''}" onclick="setFilterAssignee('team')">Équipe</div>
-    <div class="chip ${filterPriority==='critical'?'active':''}" onclick="setFilterP('critical')">🔴 Critique</div>
-    <div class="chip ${filterPriority==='high'?'active':''}" onclick="setFilterP('high')">🟠 Haute</div>
-    ${projects.map(p=>`<div class="chip ${filterProject===p.id?'active':''}" onclick="setFilterProj('${p.id}')">${p.name}</div>`).join('')}
+    <div class="chip ${filterAssignee==='me'?'active':''}" onclick="setFA('me')">Mes tâches</div>
+    <div class="chip ${filterAssignee==='team'?'active':''}" onclick="setFA('team')">Équipe</div>
+    <div class="chip ${filterPriority==='critical'?'active':''}" onclick="setFP('critical')">🔴 Critique</div>
+    <div class="chip ${filterPriority==='high'?'active':''}" onclick="setFP('high')">🟠 Haute</div>
+    ${projects.map(p=>`<div class="chip ${filterProject===p.id?'active':''}" onclick="setFProj('${p.id}')">${p.name}</div>`).join('')}
   </div>`;
 
-  html += `<div class="card"><div class="card-section">`;
-  if (!active.length) {
-    html += `<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Aucune tâche active</div><div class="empty-sub">Tout est à jour !</div></div>`;
-  }
-  active.forEach(t => { html += renderTaskItem(t); });
-  html += `</div></div>`;
+  html+=`<div class="card">`;
+  if(!active.length) html+=`<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Aucune tâche active</div></div>`;
+  active.forEach(t=>{ html+=renderTaskRow(t); });
+  html+=`</div>`;
 
-  if (done.length) {
-    html += `<div class="section-header">Terminées (${done.length})</div><div class="card"><div class="card-section">`;
-    done.forEach(t => { html += renderTaskItemDone(t); });
-    html += `</div></div>`;
+  if(done.length){
+    html+=`<div class="sec-hdr">Terminées (${done.length})</div><div class="card">`;
+    done.forEach(t=>{
+      html+=`<div class="task-item"><div class="task-left"><div class="check-circle done" onclick="toggleDone('${t.id}')"><svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg></div></div><div class="task-body"><div class="task-title done ellipsis">${t.title}</div><div class="task-meta"><span class="pill">${projById(t.projectId).name}</span></div></div></div>`;
+    });
+    html+=`</div>`;
   }
-
-  document.getElementById('screen').innerHTML = html;
+  document.getElementById('screen').innerHTML=html;
 }
 
-function renderTaskItem(t) {
-  const proj = projById(t.projectId);
-  const dl = fmtDeadline(t.deadline);
-  const slot = findBestSlot(t);
-  const sl = fmtSlot(slot);
-  const member = memberById(t.assignedTo);
-  const isTeam = t.assignedTo !== 'me';
+function renderTaskRow(t){
+  const proj=projById(t.projectId);
+  const slot=findBestSlot(t);
+  const sl=fmtSlotPill(slot);
+  const member=memberById(t.assignedTo);
+  const isTeam=t.assignedTo!=='me';
+  const dlCls=deadlineCls(t.deadline);
+  const dlLabel=fmtDate(t.deadline);
+  const priorityLabels={critical:'🔴 Critique',high:'🟠 Haute',medium:'🔵 Moyenne',low:'🟢 Basse'};
+  const barColors={critical:'var(--red)',high:'var(--orange)',medium:'var(--blue)',low:'var(--green)'};
 
   return `<div class="task-item" onclick="openTaskModal('${t.id}')">
     <div class="task-left">
       <div class="check-circle ${t.done?'done':''}" onclick="event.stopPropagation();toggleDone('${t.id}')">
-        <svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2"/></svg>
+        <svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg>
       </div>
-      <div class="task-pbar p-bar-${t.priority}"></div>
+      <div class="task-pbar" style="background:${barColors[t.priority]}"></div>
     </div>
     <div class="task-body">
       <div class="task-title ellipsis">${t.title}</div>
       <div class="task-meta">
-        <span class="meta-pill ${dl.cls}">${dl.label}</span>
-        <span class="meta-pill">${fmtDur(t.duration)}</span>
-        <span class="meta-pill" style="background:${proj.color}22;color:${proj.color};">${proj.name}</span>
-        ${isTeam?`<span class="meta-pill team">${member.initials}</span>`:''}
-        ${t.callOk?'<span class="meta-pill drive">🚗</span>':''}
-        <span class="slot-pill ${sl.cls}">${sl.label}</span>
+        <span class="pill ${dlCls}">${dlLabel}</span>
+        <span class="pill">${fmtDur(t.duration)}</span>
+        <span class="pill" style="background:${proj.color}22;color:${proj.color};">${proj.name}</span>
+        ${isTeam?`<span class="pill team">${member.initials}</span>`:''}
+        ${t.callOk?'<span class="pill" style="background:var(--orange-bg);color:var(--orange-text);">🚗</span>':''}
+      </div>
+      <div class="task-meta" style="margin-top:4px;">
+        <span class="pill ${sl.cls}">📅 ${sl.label}</span>
+        <span class="pill">${priorityLabels[t.priority]}</span>
       </div>
       <div class="task-status-row" onclick="event.stopPropagation()">
-        <button class="status-btn ${t.status==='done'?'active-done':''}" onclick="setStatus('${t.id}','done')">✓ Fait</button>
-        <button class="status-btn ${t.status==='deferred'?'active-defer':''}" onclick="setStatus('${t.id}','deferred')">↷ Reporter</button>
-        <button class="status-btn ${t.status==='more-time'?'active-more':''}" onclick="setStatus('${t.id}','more-time')">⏱ Plus de temps</button>
+        <button class="status-btn ${t.status==='done'?'s-done':''}" onclick="setStatus('${t.id}','done')">✓ Fait</button>
+        <button class="status-btn ${t.status==='deferred'?'s-defer':''}" onclick="setStatus('${t.id}','deferred')">↷ Reporter</button>
+        <button class="status-btn ${t.status==='more-time'?'s-more':''}" onclick="setStatus('${t.id}','more-time')">⏱ + Temps</button>
       </div>
     </div>
   </div>`;
 }
 
-function renderTaskItemDone(t) {
-  const proj = projById(t.projectId);
-  return `<div class="task-item" onclick="openTaskModal('${t.id}')">
-    <div class="task-left">
-      <div class="check-circle done" onclick="event.stopPropagation();toggleDone('${t.id}')">
-        <svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3" stroke="white" stroke-width="2"/></svg>
-      </div>
-    </div>
-    <div class="task-body">
-      <div class="task-title done ellipsis">${t.title}</div>
-      <div class="task-meta"><span class="meta-pill" style="background:${proj.color}22;color:${proj.color};">${proj.name}</span></div>
-    </div>
-  </div>`;
+function resetFilters(){filterPriority='all';filterProject='all';filterAssignee='all';renderTasks();}
+function setFP(p){filterPriority=filterPriority===p?'all':p;renderTasks();}
+function setFProj(p){filterProject=filterProject===p?'all':p;renderTasks();}
+function setFA(a){filterAssignee=filterAssignee===a?'all':a;renderTasks();}
+function dismissInstall(){showInstall=false;save('fp_install_dismissed',true);renderTasks();}
+
+function toggleDone(id){
+  const t=tasks.find(x=>x.id===id);
+  if(t){t.done=!t.done;t.status=t.done?'done':'todo';saveAll();render();}
+}
+function setStatus(id,status){
+  const t=tasks.find(x=>x.id===id);if(!t) return;
+  t.status=status;
+  if(status==='done'){t.done=true;}
+  else if(status==='deferred'){const d=new Date(t.deadline);d.setDate(d.getDate()+2);t.deadline=d.toISOString().slice(0,10);t.done=false;}
+  else if(status==='more-time'){t.duration=Math.round(t.duration*1.5);t.done=false;}
+  saveAll();render();
 }
 
-function setStatus(id, status) {
-  const t = tasks.find(x=>x.id===id);
-  if (!t) return;
-  t.status = status;
-  if (status === 'done') { t.done = true; }
-  else if (status === 'deferred') {
-    // push deadline +2 days and replan
-    const d = new Date(t.deadline); d.setDate(d.getDate()+2);
-    t.deadline = d.toISOString().slice(0,10);
-    t.done = false;
-  } else if (status === 'more-time') {
-    // increase duration by 50%
-    t.duration = Math.round(t.duration * 1.5);
-    t.done = false;
+// ─── TEAM ────────────────────────────────────────────────────────────────
+function renderTeam(){
+  if(viewingMemberId){
+    renderMemberTasks(viewingMemberId);return;
   }
-  saveAll(); render();
-}
-
-function toggleDone(id) {
-  const t = tasks.find(x=>x.id===id);
-  if (t) { t.done=!t.done; t.status=t.done?'done':'todo'; saveAll(); render(); }
-}
-
-function resetFilters() { filterPriority='all'; filterProject='all'; filterAssignee='all'; renderTasks(); }
-function setFilterP(p) { filterPriority=filterPriority===p?'all':p; renderTasks(); }
-function setFilterProj(p) { filterProject=filterProject===p?'all':p; renderTasks(); }
-function setFilterAssignee(a) { filterAssignee=filterAssignee===a?'all':a; renderTasks(); }
-function dismissInstall() { showInstall=false; save('fp_install_dismissed',true); renderTasks(); }
-
-// ─── PLANNING TAB ───────────────────────────────────────
-function renderPlanning() {
-  let html = '';
-  const dayNames = ["Aujourd'hui","Demain","Dans 2j","Dans 3j"];
-  const days7 = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
-
-  // Ad hoc meetings section
-  html += `<div class="section-header">Réunions ad hoc — cette semaine</div>`;
-  html += `<div class="card"><div class="card-section">`;
-  const upcoming = adHocMeetings.filter(m=>m.date>=todayStr()).sort((a,b)=>a.date.localeCompare(b.date)||a.start-b.start);
-  if (!upcoming.length) html += `<div class="card-row"><div class="row-label-sm">Aucune réunion ajoutée</div></div>`;
-  upcoming.forEach(m => {
-    const sH=Math.floor(m.start),sM=Math.round((m.start-sH)*60);
-    const eH=Math.floor(m.end),eM=Math.round((m.end-eH)*60);
-    html += `<div class="block-row">
-      <div class="block-time">${m.date.slice(5)} ${String(sH).padStart(2,'0')}h${sM?String(sM).padStart(2,'0'):''} – ${String(eH).padStart(2,'0')}h${eM?String(eM).padStart(2,'0'):''}</div>
-      <div class="block-name ellipsis">${m.name}</div>
-      <div class="block-del" onclick="deleteMeeting('${m.id}')">×</div>
-    </div>`;
-  });
-  html += `</div></div>`;
-
-  // 4-day schedule
-  for (let di=0; di<4; di++) {
-    const d = new Date(TODAY); d.setDate(d.getDate()+di);
-    const dow = d.getDay();
-    const label = di<dayNames.length ? dayNames[di] : days7[dow];
-    const fullLabel = `${label} — ${d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'short'})}`;
-    html += `<div class="section-header">${fullLabel}</div><div class="card">`;
-
-    const slots = getDateSlots(d);
-    // drive slots
-    slots.filter(sl=>sl.t==='drive').forEach(sl => {
-      const hS=Math.floor(sl.s),mS=Math.round((sl.s-hS)*60);
-      const dur = Math.round((sl.e-sl.s)*60);
-      html += `<div class="tl-row"><div class="tl-time">${String(hS).padStart(2,'0')}h${mS?String(mS).padStart(2,'0'):''}</div><div class="tl-bar" style="background:var(--orange)"></div><div class="tl-content"><div class="tl-name" style="color:var(--orange)">🚗 Trajet voiture</div><div class="tl-sub">${fmtDur(dur)} · appels possibles</div></div></div>`;
-    });
-    // meetings from ad hoc
-    const dStr = d.toISOString().slice(0,10);
-    adHocMeetings.filter(m=>m.date===dStr).forEach(m => {
-      const hS=Math.floor(m.start),mS=Math.round((m.start-hS)*60);
-      const dur=Math.round((m.end-m.start)*60);
-      html += `<div class="tl-row"><div class="tl-time">${String(hS).padStart(2,'0')}h${mS?String(mS).padStart(2,'0'):''}</div><div class="tl-bar" style="background:var(--red)"></div><div class="tl-content"><div class="tl-name" style="color:var(--red)">📅 ${m.name}</div><div class="tl-sub">${fmtDur(dur)}</div></div></div>`;
-    });
-    // scheduled tasks
-    const dayTasks = tasks.filter(t=>!t.done).sort((a,b)=>score(b)-score(a));
-    let placed = 0;
-    dayTasks.forEach(t => {
-      const slot = findBestSlot(t);
-      if (!slot || slot.day.toDateString()!==d.toDateString()) return;
-      placed++;
-      const hS=Math.floor(slot.start),mS=Math.round((slot.start-hS)*60);
-      const hE=Math.floor(slot.end),eM=Math.round((slot.end-hE)*60);
-      const proj = projById(t.projectId);
-      const member = memberById(t.assignedTo);
-      html += `<div class="tl-row"><div class="tl-time">${String(hS).padStart(2,'0')}h${mS?String(mS).padStart(2,'0'):''}</div><div class="tl-bar p-bar-${t.priority}"></div><div class="tl-content"><div class="tl-name">${t.title}</div><div class="tl-sub">${proj.name} · ${fmtDur(t.duration)} · fin ${String(hE).padStart(2,'0')}h${eM?String(eM).padStart(2,'0'):''}${t.assignedTo!=='me'?' · '+member.name:''}</div></div></div>`;
-    });
-    if (!placed) html += `<div class="card-row"><div class="row-label-sm">Aucune tâche placée</div></div>`;
-    html += `</div>`;
-  }
-  document.getElementById('screen').innerHTML = html;
-}
-
-function deleteMeeting(id) {
-  adHocMeetings = adHocMeetings.filter(m=>m.id!==id);
-  saveAll(); renderPlanning();
-}
-
-// ─── PROJECTS TAB ───────────────────────────────────────
-function renderProjects() {
-  let html = `<div class="section-header">Mes projets</div><div class="card">`;
-  if (!projects.length) html += `<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">Aucun projet</div></div>`;
-  projects.forEach(p => {
-    const count = tasks.filter(t=>t.projectId===p.id&&!t.done).length;
-    const overdue = tasks.filter(t=>t.projectId===p.id&&!t.done&&daysDiff(t.deadline)<0).length;
-    html += `<div class="proj-card" onclick="openProjectModal('${p.id}')">
-      <div class="proj-dot" style="background:${p.color}"></div>
-      <div class="proj-info">
-        <div class="proj-name">${p.name}</div>
-        <div class="proj-count">${count} tâche${count>1?'s':''} en cours${overdue?` · <span style="color:var(--red)">${overdue} en retard</span>`:''}</div>
-      </div>
-      <div class="row-chevron">›</div>
-    </div>`;
-  });
-  html += `</div>`;
-  document.getElementById('screen').innerHTML = html;
-}
-
-// ─── TEAM TAB ────────────────────────────────────────────
-function renderTeam() {
-  let html = `<div class="section-header">Membres de l'équipe</div><div class="card">`;
-  members.forEach(m => {
-    const myTasks = tasks.filter(t=>t.assignedTo===m.id&&!t.done);
-    const overdue = myTasks.filter(t=>daysDiff(t.deadline)<0).length;
-    html += `<div class="member-card" onclick="openMemberTasks('${m.id}')">
+  let html=`<div class="card" style="margin-top:12px;">`;
+  members.forEach(m=>{
+    const mt=tasks.filter(t=>t.assignedTo===m.id&&!t.done);
+    const ov=mt.filter(t=>daysDiff(t.deadline)<0).length;
+    html+=`<div class="member-card" onclick="openMemberDetail('${m.id}')">
       <div class="avatar" style="background:${m.color}22;color:${m.color};">${m.initials}</div>
       <div class="member-info">
         <div class="member-name">${m.name}</div>
-        <div class="member-tasks">${myTasks.length} tâche${myTasks.length>1?'s':''} en cours</div>
+        <div class="member-meta">${mt.length} tâche${mt.length>1?'s':''} en cours</div>
       </div>
-      ${overdue?`<div class="member-alert">${overdue} en retard</div>`:''}
-      <div class="row-chevron">›</div>
+      ${ov?`<div class="alert-badge">${ov} en retard</div>`:''}
+      <span style="color:var(--text3);font-size:20px;margin-left:4px;">›</span>
     </div>`;
   });
-  html += `</div>`;
+  html+=`</div>`;
+  document.getElementById('screen').innerHTML=html;
+}
 
-  // All team tasks overview
-  const teamTasks = tasks.filter(t=>t.assignedTo!=='me'&&!t.done).sort((a,b)=>score(b)-score(a));
-  if (teamTasks.length) {
-    html += `<div class="section-header">Toutes les tâches équipe</div><div class="card"><div class="card-section">`;
-    teamTasks.forEach(t => { html += renderTaskItem(t); });
-    html += `</div></div>`;
+function openMemberDetail(memberId){
+  viewingMemberId=memberId;
+  render();
+}
+
+function renderMemberTasks(memberId){
+  const m=memberById(memberId);
+  const mt=tasks.filter(t=>t.assignedTo===memberId&&!t.done).sort((a,b)=>score(b)-score(a));
+  const done=tasks.filter(t=>t.assignedTo===memberId&&t.done);
+  let html=``;
+  if(!mt.length&&!done.length){
+    html+=`<div class="empty" style="margin-top:20px;"><div class="empty-icon">🎉</div><div class="empty-title">Aucune tâche</div><div class="empty-sub">${m.name} n'a pas de tâche en cours.</div></div>`;
   }
-  document.getElementById('screen').innerHTML = html;
+  if(mt.length){
+    html+=`<div class="card" style="margin-top:12px;">`;
+    mt.forEach(t=>{html+=renderTaskRow(t);});
+    html+=`</div>`;
+  }
+  if(done.length){
+    html+=`<div class="sec-hdr">Terminées (${done.length})</div><div class="card">`;
+    done.forEach(t=>{
+      html+=`<div class="task-item"><div class="task-body"><div class="task-title done ellipsis">${t.title}</div></div></div>`;
+    });
+    html+=`</div>`;
+  }
+  document.getElementById('screen').innerHTML=html;
 }
 
-function openMemberTasks(memberId) {
-  filterAssignee = memberId;
-  switchTab('tasks');
-  filterAssignee = memberId;
-  renderTasks();
-}
-
-// ─── FOLLOWUP TAB ───────────────────────────────────────
-function renderFollowup() {
-  const followupTasks = tasks.filter(t=>t.notes&&t.notes.startsWith('[Suivi]'));
-  let html = `
-    <div class="section-header">Notes de réunion → tâches</div>
+// ─── NOTES ──────────────────────────────────────────────────────────────
+function renderNotes(){
+  const followupTasks=tasks.filter(t=>t.notes&&t.notes.startsWith('[Suivi]'));
+  let html=`
+    <div class="sec-hdr" style="padding-top:12px;">Notes de réunion → Tâches</div>
     <div class="fu-box">
-      <textarea class="fu-textarea" id="fu-input" placeholder="Colle tes notes ou actions de réunion ici…&#10;&#10;Ex: Réunion avec TechCo lundi — rappeler leur DG la semaine prochaine, envoyer notre roadmap avant jeudi, Sophie doit préparer la présentation pour vendredi…"></textarea>
+      <textarea class="fu-textarea" id="fu-input" placeholder="Colle tes notes ou compte-rendu ici…&#10;&#10;Ex: Réunion TechCo lundi — rappeler leur DG la semaine prochaine, envoyer notre roadmap avant jeudi, Sophie doit préparer la présentation pour vendredi…"></textarea>
       <div class="fu-footer">
-        <button class="fu-btn" onclick="processFollowup()">🧠 Extraire les tâches ↗</button>
+        <span class="fu-hint">L'IA extrait et crée les tâches</span>
+        <button class="fu-btn" onclick="processFollowup()">🧠 Extraire ↗</button>
       </div>
     </div>
     <div id="fu-result"></div>`;
-  if (followupTasks.length) {
-    html += `<div class="section-header">Créées depuis les réunions</div><div class="card"><div class="card-section">`;
-    followupTasks.forEach(t => { html += renderTaskItem(t); });
-    html += `</div></div>`;
+  if(followupTasks.length){
+    html+=`<div class="sec-hdr">Créées depuis des réunions</div><div class="card">`;
+    followupTasks.forEach(t=>{html+=renderTaskRow(t);});
+    html+=`</div>`;
   }
-  document.getElementById('screen').innerHTML = html;
+  document.getElementById('screen').innerHTML=html;
 }
 
-// ─── AI ─────────────────────────────────────────────────
-async function triggerAI() {
-  const active = tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
-  if (!active.length) return;
-  aiResponse = '';
-  render();
-  document.querySelector('.ai-panel .ai-text').innerHTML = '<span class="ai-loading"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>';
+// ─── PROJECTS ───────────────────────────────────────────────────────────
+function renderProjects(){
+  let html=`<div class="card" style="margin-top:12px;">`;
+  if(!projects.length) html+=`<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">Aucun projet</div></div>`;
+  projects.forEach(p=>{
+    const count=tasks.filter(t=>t.projectId===p.id&&!t.done).length;
+    const ov=tasks.filter(t=>t.projectId===p.id&&!t.done&&daysDiff(t.deadline)<0).length;
+    html+=`<div class="proj-card" onclick="openProjectModal('${p.id}')">
+      <div class="proj-dot" style="background:${p.color}"></div>
+      <div class="proj-info">
+        <div class="proj-name">${p.name}</div>
+        <div class="proj-meta">${count} tâche${count>1?'s':''} en cours${ov?` · <span style="color:var(--red)">${ov} en retard</span>`:''}</div>
+      </div>
+      <span style="color:var(--text3);font-size:20px;">›</span>
+    </div>`;
+  });
+  html+=`</div>`;
+  document.getElementById('screen').innerHTML=html;
+}
 
-  const d = new Date(); const dow = d.getDay();
-  const dayNames = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+// ─── AI ─────────────────────────────────────────────────────────────────
+async function triggerAI(){
+  const active=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+  if(!active.length) return;
+  aiResponse='';render();
+  // show loading
+  const panel=document.querySelector('.ai-panel');
+  if(panel) panel.querySelector('.ai-text').innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
 
-  const summary = active.map((t,i)=>{
-    const sl = fmtSlot(findBestSlot(t));
-    return `${i+1}. "${t.title}" (${projById(t.projectId).name}) — ${t.priority}, deadline: ${t.deadline}, ${fmtDur(t.duration)}${t.callOk?' [appel voiture ok]':''}, prochain créneau: ${sl.label}`;
+  const d=new Date();
+  const dayNames=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const summary=active.slice(0,10).map((t,i)=>{
+    const sl=fmtSlotPill(findBestSlot(t));
+    return `${i+1}. "${t.title}" (${projById(t.projectId).name}) — ${t.priority}, deadline:${t.deadline}, ${fmtDur(t.duration)}${t.callOk?' [appel voiture ok]':''}, créneau:${sl.label}`;
   }).join('\n');
+  const teamAlert=tasks.filter(t=>!t.done&&t.assignedTo!=='me'&&daysDiff(t.deadline)<0)
+    .map(t=>`"${t.title}" (${memberById(t.assignedTo).name}) retard ${Math.abs(daysDiff(t.deadline))}j`).join(', ');
 
-  const teamAlert = tasks.filter(t=>!t.done&&t.assignedTo!=='me'&&daysDiff(t.deadline)<0)
-    .map(t=>`"${t.title}" assignée à ${memberById(t.assignedTo).name} — ${Math.abs(daysDiff(t.deadline))}j de retard`).join('\n');
-
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`Tu es l'assistant d'un entrepreneur. Aujourd'hui: ${dayNames[dow]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (triées par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe:\n'+teamAlert:''}\n\nDonne un conseil concret en 4-5 lignes: par quoi commencer maintenant, quel créneau utiliser, et une alerte si quelque chose risque de lui échapper (y compris dans l'équipe). Tutoie-le. Sois direct et actionnable.`}]})});
-    const data = await res.json();
-    aiResponse = data.content?.[0]?.text || 'Impossible d\'analyser.';
-  } catch(e) { aiResponse = 'Erreur de connexion à l\'IA.'; }
-  saveAll(); render();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+        messages:[{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nDonne un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, et une alerte si quelque chose risque de lui échapper. Tutoie-le. Direct et actionnable.`}]})
+    });
+    const data=await res.json();
+    aiResponse=data.content?.[0]?.text||'Impossible d\'analyser.';
+  }catch(e){aiResponse='Erreur de connexion.';}
+  saveAll();render();
 }
 
-async function processFollowup() {
-  const input = document.getElementById('fu-input')?.value.trim();
-  if (!input) return;
-  const re = document.getElementById('fu-result');
-  re.innerHTML = `<div style="padding:16px;text-align:center;color:var(--text2);font-size:14px;"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Extraction en cours…</div>`;
-  const memberList = members.map(m=>`${m.id}:${m.name}`).join(', ');
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:`Extrait les tâches depuis ce texte de réunion. Membres disponibles: moi="me", ${memberList}. Projets disponibles: ${projects.map(p=>p.id+':'+p.name).join(', ')}.\n\nRéponds UNIQUEMENT en JSON valide, tableau d'objets: title, projectId (utilise un des ids fournis ou "p1" par défaut), priority ("critical"|"high"|"medium"|"low"), deadline (YYYY-MM-DD depuis aujourd'hui ${todayStr()}), duration (entier minutes), callOk (boolean), assignedTo (id membre ou "me"). Pas de markdown.\n\nTexte: ${input}`}]})});
-    const data = await res.json();
-    let text = data.content?.[0]?.text||'[]';
-    text = text.replace(/```json|```/g,'').trim();
-    const extracted = JSON.parse(text);
-    extracted.forEach(t => tasks.push({
-      id:genId(), title:t.title, projectId:t.projectId||projects[0]?.id||'p1',
-      priority:t.priority||'medium', deadline:t.deadline||todayStr(),
-      duration:t.duration||30, done:false, status:'todo',
-      notes:'[Suivi] '+input.substring(0,80), callOk:!!t.callOk,
-      assignedTo:t.assignedTo||'me'
-    }));
+async function processFollowup(){
+  const input=document.getElementById('fu-input')?.value.trim();
+  if(!input){alert('Écris tes notes d\'abord !');return;}
+  const re=document.getElementById('fu-result');
+  if(!re) return;
+  re.innerHTML=`<div style="text-align:center;padding:16px;color:var(--text2);font-size:14px;"><span class="dot"></span><span class="dot"></span><span class="dot"></span> Extraction en cours…</div>`;
+
+  const memberList=members.map(m=>`${m.id}:${m.name}`).join(', ');
+  const projectList=projects.map(p=>`${p.id}:${p.name}`).join(', ');
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,
+        messages:[{role:'user',content:`Extrait toutes les tâches à faire depuis ce texte. Membres: moi="me", ${memberList}. Projets: ${projectList}.\n\nRéponds UNIQUEMENT avec un tableau JSON valide, sans markdown, sans backticks, sans texte avant ou après. Chaque objet: {"title":"...","projectId":"...","priority":"critical|high|medium|low","deadline":"YYYY-MM-DD","duration":60,"callOk":false,"assignedTo":"me ou id_membre"}. Deadline depuis aujourd'hui ${todayStr()}.\n\nTexte:\n${input}`}]})
+    });
+    const data=await res.json();
+    let text=(data.content?.[0]?.text||'').trim();
+    // Strip any markdown fences
+    text=text.replace(/^```[a-z]*\n?/,'').replace(/\n?```$/,'').trim();
+    // Find JSON array
+    const start=text.indexOf('[');const end=text.lastIndexOf(']');
+    if(start===-1||end===-1) throw new Error('No JSON array found');
+    text=text.slice(start,end+1);
+    const extracted=JSON.parse(text);
+    if(!Array.isArray(extracted)||extracted.length===0){
+      re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--orange-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--orange-text);">Aucune tâche détectée dans ce texte.</div>`;
+      return;
+    }
+    extracted.forEach(t=>{
+      tasks.push({
+        id:genId(),title:t.title||'Tâche',
+        projectId:projects.find(p=>p.id===t.projectId)?t.projectId:(projects[0]?.id||'p1'),
+        priority:['critical','high','medium','low'].includes(t.priority)?t.priority:'medium',
+        deadline:t.deadline||todayStr(),duration:parseInt(t.duration)||30,
+        done:false,status:'todo',notes:'[Suivi] '+input.substring(0,100),
+        callOk:!!t.callOk,
+        assignedTo:t.assignedTo==='me'?'me':(members.find(m=>m.id===t.assignedTo)?t.assignedTo:'me')
+      });
+    });
     saveAll();
-    re.innerHTML = `<div style="margin:8px 12px;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);">✓ ${extracted.length} tâche(s) créées et planifiées automatiquement</div>`;
-    setTimeout(()=>render(), 1200);
-  } catch(e) {
-    re.innerHTML = `<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">Erreur lors de l'extraction. Réessaie.</div>`;
+    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);">✓ ${extracted.length} tâche(s) créées et planifiées automatiquement !</div>`;
+    setTimeout(()=>{document.getElementById('fu-input').value='';render();},1500);
+  }catch(e){
+    console.error(e);
+    re.innerHTML=`<div style="margin:8px 12px;padding:10px 14px;background:var(--red-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--red-text);">Erreur lors de l'extraction. Réessaie.</div>`;
   }
 }
 
-// ─── MODALS ─────────────────────────────────────────────
-function openSheet(title, body) {
-  document.getElementById('sheet-title').textContent = title;
-  document.getElementById('sheet-body').innerHTML = body;
+// ─── MODALS ──────────────────────────────────────────────────────────────
+function openSheet(title,body){
+  document.getElementById('sheet-title').textContent=title;
+  document.getElementById('sheet-body').innerHTML=body;
   document.getElementById('overlay').classList.add('open');
 }
-function closeSheet() { document.getElementById('overlay').classList.remove('open'); }
-function handleOverlayClick(e) { if (e.target===document.getElementById('overlay')) closeSheet(); }
+function closeSheet(){document.getElementById('overlay').classList.remove('open');}
+function handleOverlayClick(e){if(e.target===document.getElementById('overlay')) closeSheet();}
 
-function openAddModal() {
-  if (currentTab==='tasks') openTaskModal(null);
-  else if (currentTab==='projects') openProjectModal(null);
-  else if (currentTab==='team') openMemberModal(null);
-  else if (currentTab==='planning') openMeetingModal();
+function openAddModal(){
+  if(currentTab==='tasks') openTaskModal(null);
+  else if(currentTab==='projects') openProjectModal(null);
+  else if(currentTab==='team') openMemberModal(null);
+  else if(currentTab==='planning') openMeetingModal();
 }
 
-function openTaskModal(id) {
-  const t = id ? tasks.find(x=>x.id===id) : null;
-  const slot = t&&!t.done ? fmtSlot(findBestSlot(t)) : null;
-  const projOptions = projects.map(p=>`<option value="${p.id}" ${t?.projectId===p.id?'selected':''}>${p.name}</option>`).join('');
-  const memberOptions = `<option value="me" ${!t||t.assignedTo==='me'?'selected':''}>Moi</option>`+members.map(m=>`<option value="${m.id}" ${t?.assignedTo===m.id?'selected':''}>${m.name}</option>`).join('');
+function openTaskModal(id){
+  const t=id?tasks.find(x=>x.id===id):null;
+  const slot=t&&!t.done?fmtSlotPill(findBestSlot(t)):null;
+  const projOpts=projects.map(p=>`<option value="${p.id}" ${t?.projectId===p.id?'selected':''}>${p.name}</option>`).join('');
+  const memberOpts=`<option value="me" ${!t||t.assignedTo==='me'?'selected':''}>Moi</option>`+members.map(m=>`<option value="${m.id}" ${t?.assignedTo===m.id?'selected':''}>${m.name}</option>`).join('');
 
-  openSheet(id?'Modifier la tâche':'Nouvelle tâche', `
+  openSheet(id?'Modifier la tâche':'Nouvelle tâche',`
     ${slot?`<div style="padding:8px 12px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:13px;color:var(--green-text);margin-bottom:14px;">📅 Créneau suggéré : ${slot.label}</div>`:''}
-    <div class="form-field"><div class="form-label">Titre</div><input class="form-input" id="f-title" value="${t?t.title:''}" placeholder="Que faut-il faire ?"/></div>
+    <div class="form-field"><label class="form-label">Titre</label><input class="form-input" id="f-title" value="${t?t.title.replace(/"/g,'&quot;'):''}" placeholder="Que faut-il faire ?"/></div>
     <div class="form-row2">
-      <div class="form-field"><div class="form-label">Projet</div><select class="form-select" id="f-project">${projOptions}</select></div>
-      <div class="form-field"><div class="form-label">Assigné à</div><select class="form-select" id="f-assignee">${memberOptions}</select></div>
+      <div class="form-field"><label class="form-label">Projet</label><select class="form-select" id="f-project">${projOpts}</select></div>
+      <div class="form-field"><label class="form-label">Assigné à</label><select class="form-select" id="f-assignee">${memberOpts}</select></div>
     </div>
     <div class="form-row2">
-      <div class="form-field"><div class="form-label">Criticité</div><select class="form-select" id="f-priority">
+      <div class="form-field"><label class="form-label">Criticité</label><select class="form-select" id="f-priority">
         <option value="critical" ${t?.priority==='critical'?'selected':''}>🔴 Critique</option>
         <option value="high" ${t?.priority==='high'?'selected':''}>🟠 Haute</option>
         <option value="medium" ${!t||t.priority==='medium'?'selected':''}>🔵 Moyenne</option>
         <option value="low" ${t?.priority==='low'?'selected':''}>🟢 Basse</option>
       </select></div>
-      <div class="form-field"><div class="form-label">Deadline</div><input class="form-input" type="date" id="f-deadline" value="${t?t.deadline:todayStr()}"/></div>
+      <div class="form-field"><label class="form-label">Deadline</label><input class="form-input" type="date" id="f-deadline" value="${t?t.deadline:todayStr()}"/></div>
     </div>
     <div class="form-row2">
-      <div class="form-field"><div class="form-label">Durée (min)</div><input class="form-input" type="number" id="f-duration" value="${t?t.duration:60}" min="5"/></div>
-      <div class="form-field"><div class="form-label">Type</div><select class="form-select" id="f-callok">
+      <div class="form-field"><label class="form-label">Durée (min)</label><input class="form-input" type="number" id="f-duration" value="${t?t.duration:60}" min="5"/></div>
+      <div class="form-field"><label class="form-label">Type</label><select class="form-select" id="f-callok">
         <option value="0" ${!t?.callOk?'selected':''}>💻 Concentration</option>
         <option value="1" ${t?.callOk?'selected':''}>🚗 Appel voiture ok</option>
       </select></div>
     </div>
-    <div class="form-field"><div class="form-label">Notes</div><textarea class="form-input" id="f-notes" rows="2" placeholder="Contexte, dépendances…">${t?t.notes:''}</textarea></div>
+    <div class="form-field"><label class="form-label">Notes</label><textarea class="form-input" id="f-notes" rows="2" placeholder="Contexte, dépendances…">${t?t.notes:''}</textarea></div>
     <button class="btn-primary" onclick="saveTask('${id||''}')">💾 ${id?'Enregistrer':'Créer la tâche'}</button>
     ${id?`<button class="btn-danger" onclick="deleteTask('${id}')">Supprimer</button>`:''}
     <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
   `);
 }
 
-function saveTask(id) {
-  const title = document.getElementById('f-title').value.trim();
-  const projectId = document.getElementById('f-project').value;
-  const assignedTo = document.getElementById('f-assignee').value;
-  const priority = document.getElementById('f-priority').value;
-  const deadline = document.getElementById('f-deadline').value;
-  const duration = parseInt(document.getElementById('f-duration').value)||60;
-  const callOk = document.getElementById('f-callok').value==='1';
-  const notes = document.getElementById('f-notes').value.trim();
-  if (!title||!deadline) return;
-  if (id) {
-    const t = tasks.find(x=>x.id===id);
-    Object.assign(t,{title,projectId,assignedTo,priority,deadline,duration,callOk,notes});
-  } else {
-    tasks.push({id:genId(),title,projectId,assignedTo,priority,deadline,duration,done:false,status:'todo',notes,callOk});
-  }
-  saveAll(); closeSheet(); render();
+function saveTask(id){
+  const title=document.getElementById('f-title').value.trim();
+  const projectId=document.getElementById('f-project').value;
+  const assignedTo=document.getElementById('f-assignee').value;
+  const priority=document.getElementById('f-priority').value;
+  const deadline=document.getElementById('f-deadline').value;
+  const duration=parseInt(document.getElementById('f-duration').value)||60;
+  const callOk=document.getElementById('f-callok').value==='1';
+  const notes=document.getElementById('f-notes').value.trim();
+  if(!title||!deadline) return;
+  if(id){const t=tasks.find(x=>x.id===id);Object.assign(t,{title,projectId,assignedTo,priority,deadline,duration,callOk,notes});}
+  else tasks.push({id:genId(),title,projectId,assignedTo,priority,deadline,duration,done:false,status:'todo',notes,callOk});
+  saveAll();closeSheet();render();
 }
-function deleteTask(id) { tasks=tasks.filter(t=>t.id!==id); saveAll(); closeSheet(); render(); }
+function deleteTask(id){tasks=tasks.filter(t=>t.id!==id);saveAll();closeSheet();render();}
 
-function openProjectModal(id) {
-  const p = id ? projects.find(x=>x.id===id) : null;
-  const swatches = COLORS.map(c=>`<div class="color-swatch ${p?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
-  openSheet(id?'Modifier le projet':'Nouveau projet', `
-    <div class="form-field"><div class="form-label">Nom du projet</div><input class="form-input" id="p-name" value="${p?p.name:''}" placeholder="Nom du projet"/></div>
-    <div class="form-field"><div class="form-label">Couleur</div><div class="color-grid" id="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${p?p.color:COLORS[0]}"/></div>
-    <button class="btn-primary" onclick="saveProject('${id||''}')">💾 ${id?'Enregistrer':'Créer le projet'}</button>
+function openProjectModal(id){
+  const p=id?projects.find(x=>x.id===id):null;
+  const swatches=COLORS.map(c=>`<div class="color-swatch ${p?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+  openSheet(id?'Modifier le projet':'Nouveau projet',`
+    <div class="form-field"><label class="form-label">Nom du projet</label><input class="form-input" id="p-name" value="${p?p.name:''}" placeholder="Nom du projet"/></div>
+    <div class="form-field"><label class="form-label">Couleur</label><div class="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${p?p.color:COLORS[0]}"/></div>
+    <button class="btn-primary" onclick="saveProject('${id||''}')">💾 ${id?'Enregistrer':'Créer'}</button>
     ${id?`<button class="btn-danger" onclick="deleteProject('${id}')">Supprimer</button>`:''}
     <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
   `);
 }
-
-function selectColor(c) {
-  document.getElementById('p-color').value = c;
-  document.querySelectorAll('.color-swatch').forEach(s=>s.classList.toggle('selected',s.style.background===c||s.style.backgroundColor===c));
+function selectColor(c){
+  document.getElementById('p-color').value=c;
+  document.querySelectorAll('.color-swatch').forEach(s=>{
+    const sc=s.style.backgroundColor||s.style.background;
+    s.classList.toggle('selected',sc===c||s.style.background===c);
+  });
 }
-function saveProject(id) {
-  const name = document.getElementById('p-name').value.trim();
-  const color = document.getElementById('p-color').value;
-  if (!name) return;
-  if (id) { const p=projects.find(x=>x.id===id); Object.assign(p,{name,color}); }
+function saveProject(id){
+  const name=document.getElementById('p-name').value.trim();
+  const color=document.getElementById('p-color').value;
+  if(!name) return;
+  if(id){const p=projects.find(x=>x.id===id);Object.assign(p,{name,color});}
   else projects.push({id:genId(),name,color});
-  saveAll(); closeSheet(); render();
+  saveAll();closeSheet();render();
 }
-function deleteProject(id) {
+function deleteProject(id){
   projects=projects.filter(p=>p.id!==id);
-  tasks.forEach(t=>{ if(t.projectId===id) t.projectId=projects[0]?.id||''; });
-  saveAll(); closeSheet(); render();
+  tasks.forEach(t=>{if(t.projectId===id) t.projectId=projects[0]?.id||'';});
+  saveAll();closeSheet();render();
 }
 
-function openMemberModal(id) {
-  const m = id ? members.find(x=>x.id===id) : null;
-  const swatches = COLORS.map(c=>`<div class="color-swatch ${m?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
-  openSheet(id?'Modifier le membre':'Nouveau membre', `
-    <div class="form-field"><div class="form-label">Nom</div><input class="form-input" id="m-name" value="${m?m.name:''}" placeholder="Prénom Nom"/></div>
-    <div class="form-field"><div class="form-label">Initiales (2 lettres)</div><input class="form-input" id="m-initials" value="${m?m.initials:''}" maxlength="3" placeholder="AB"/></div>
-    <div class="form-field"><div class="form-label">Couleur</div><div class="color-grid" id="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${m?m.color:COLORS[5]}"/></div>
+function openMemberModal(id){
+  const m=id?members.find(x=>x.id===id):null;
+  const swatches=COLORS.map(c=>`<div class="color-swatch ${m?.color===c?'selected':''}" style="background:${c}" onclick="selectColor('${c}')"></div>`).join('');
+  openSheet(id?'Modifier le membre':'Nouveau membre',`
+    <div class="form-field"><label class="form-label">Nom</label><input class="form-input" id="m-name" value="${m?m.name:''}" placeholder="Prénom Nom"/></div>
+    <div class="form-field"><label class="form-label">Initiales</label><input class="form-input" id="m-initials" value="${m?m.initials:''}" maxlength="3" placeholder="AB"/></div>
+    <div class="form-field"><label class="form-label">Couleur</label><div class="color-grid">${swatches}</div><input type="hidden" id="p-color" value="${m?m.color:COLORS[5]}"/></div>
     <button class="btn-primary" onclick="saveMember('${id||''}')">💾 ${id?'Enregistrer':'Ajouter'}</button>
-    ${id?`<button class="btn-danger" onclick="deleteMember('${id}')">Retirer de l'équipe</button>`:''}
+    ${id?`<button class="btn-danger" onclick="deleteMember('${id}')">Retirer</button>`:''}
     <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
   `);
 }
-function saveMember(id) {
+function saveMember(id){
   const name=document.getElementById('m-name').value.trim();
   const initials=document.getElementById('m-initials').value.trim().toUpperCase();
   const color=document.getElementById('p-color').value;
-  if (!name||!initials) return;
-  if (id) { const m=members.find(x=>x.id===id); Object.assign(m,{name,initials,color}); }
+  if(!name||!initials) return;
+  if(id){const m=members.find(x=>x.id===id);Object.assign(m,{name,initials,color});}
   else members.push({id:genId(),name,initials,color});
-  saveAll(); closeSheet(); render();
+  saveAll();closeSheet();render();
 }
-function deleteMember(id) {
-  tasks.forEach(t=>{ if(t.assignedTo===id) t.assignedTo='me'; });
+function deleteMember(id){
+  tasks.forEach(t=>{if(t.assignedTo===id) t.assignedTo='me';});
   members=members.filter(m=>m.id!==id);
-  saveAll(); closeSheet(); render();
+  if(viewingMemberId===id) viewingMemberId=null;
+  saveAll();closeSheet();render();
 }
 
-function openMeetingModal() {
-  openSheet('Bloquer une réunion', `
-    <div class="form-field"><div class="form-label">Titre / sujet</div><input class="form-input" id="mt-name" placeholder="Ex: Call client Eurotech"/></div>
-    <div class="form-field"><div class="form-label">Date</div><input class="form-input" type="date" id="mt-date" value="${todayStr()}"/></div>
+function openMeetingModal(){
+  openSheet('Bloquer une réunion',`
+    <div class="form-field"><label class="form-label">Sujet</label><input class="form-input" id="mt-name" placeholder="Ex: Call client Eurotech"/></div>
+    <div class="form-field"><label class="form-label">Date</label><input class="form-input" type="date" id="mt-date" value="${todayStr()}"/></div>
     <div class="form-row2">
-      <div class="form-field"><div class="form-label">Début (heure)</div><input class="form-input" type="time" id="mt-start" value="09:00"/></div>
-      <div class="form-field"><div class="form-label">Fin (heure)</div><input class="form-input" type="time" id="mt-end" value="10:00"/></div>
+      <div class="form-field"><label class="form-label">Début</label><input class="form-input" type="time" id="mt-start" value="09:00"/></div>
+      <div class="form-field"><label class="form-label">Fin</label><input class="form-input" type="time" id="mt-end" value="10:00"/></div>
     </div>
     <div id="mt-impact" style="margin-bottom:10px;"></div>
-    <button class="btn-primary" onclick="saveMeeting()">📅 Bloquer ce créneau</button>
+    <button class="btn-primary" onclick="saveMeeting()">📅 Bloquer</button>
     <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
   `);
-  document.getElementById('mt-start').addEventListener('change', previewImpact);
-  document.getElementById('mt-end').addEventListener('change', previewImpact);
-  document.getElementById('mt-date').addEventListener('change', previewImpact);
+  ['mt-start','mt-end','mt-date'].forEach(id=>{document.getElementById(id).addEventListener('change',previewImpact);});
 }
-
-function previewImpact() {
-  const date = document.getElementById('mt-date').value;
-  const startVal = document.getElementById('mt-start').value;
-  const endVal = document.getElementById('mt-end').value;
-  if (!date||!startVal||!endVal) return;
-  const [sh,sm] = startVal.split(':').map(Number);
-  const [eh,em] = endVal.split(':').map(Number);
-  const s = sh+sm/60, e = eh+em/60;
-  if (e<=s) return;
-  // find tasks that would be displaced
-  const displaced = tasks.filter(t=>!t.done&&t.assignedTo==='me').filter(t=>{
-    const sl = findBestSlot(t);
-    if (!sl) return false;
-    return sl.day.toISOString().slice(0,10)===date && sl.start<e && sl.end>s;
+function previewImpact(){
+  const date=document.getElementById('mt-date').value;
+  const sv=document.getElementById('mt-start').value;
+  const ev=document.getElementById('mt-end').value;
+  if(!date||!sv||!ev) return;
+  const[sh,sm]=sv.split(':').map(Number);const[eh,em]=ev.split(':').map(Number);
+  const s=sh+sm/60,e=eh+em/60;if(e<=s) return;
+  const displaced=tasks.filter(t=>!t.done&&t.assignedTo==='me').filter(t=>{
+    const sl=findBestSlot(t);
+    return sl&&sl.day.toISOString().slice(0,10)===date&&sl.start<e&&sl.end>s;
   });
-  const el = document.getElementById('mt-impact');
-  if (displaced.length) {
-    el.innerHTML = `<div style="padding:8px 10px;background:var(--orange-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--orange-text);">⚠ ${displaced.length} tâche(s) seront replanifiées automatiquement : ${displaced.map(t=>t.title).join(', ')}</div>`;
-  } else {
-    el.innerHTML = `<div style="padding:8px 10px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--green-text);">✓ Aucune tâche impactée</div>`;
-  }
+  document.getElementById('mt-impact').innerHTML=displaced.length
+    ?`<div style="padding:8px 10px;background:var(--orange-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--orange-text);">⚠ ${displaced.length} tâche(s) replanifiées : ${displaced.map(t=>t.title).join(', ')}</div>`
+    :`<div style="padding:8px 10px;background:var(--green-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--green-text);">✓ Aucune tâche impactée</div>`;
 }
-
-function saveMeeting() {
+function saveMeeting(){
   const name=document.getElementById('mt-name').value.trim();
   const date=document.getElementById('mt-date').value;
-  const startVal=document.getElementById('mt-start').value;
-  const endVal=document.getElementById('mt-end').value;
-  if (!name||!date||!startVal||!endVal) return;
-  const [sh,sm]=startVal.split(':').map(Number);
-  const [eh,em]=endVal.split(':').map(Number);
+  const sv=document.getElementById('mt-start').value;
+  const ev=document.getElementById('mt-end').value;
+  if(!name||!date||!sv||!ev) return;
+  const[sh,sm]=sv.split(':').map(Number);const[eh,em]=ev.split(':').map(Number);
   adHocMeetings.push({id:genId(),name,date,start:sh+sm/60,end:eh+em/60});
-  saveAll(); closeSheet(); render();
+  saveAll();closeSheet();render();
+}
+function deleteMeeting(id){
+  adHocMeetings=adHocMeetings.filter(m=>m.id!==id);
+  saveAll();renderPlanning();
 }
 
-// ─── SERVICE WORKER ──────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(()=>{});
-  });
+// ─── SERVICE WORKER ──────────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
 }
 
-// ─── INIT ────────────────────────────────────────────────
+// ─── INIT ────────────────────────────────────────────────────────────────
 render();
 </script>
 </body>
