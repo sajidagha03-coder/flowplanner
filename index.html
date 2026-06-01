@@ -1701,15 +1701,14 @@ function exportMeetingToCalendar(meetingId){
   setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
 }
 
-// ─── SERVICE WORKER — unregister all, no more caching ───────────────────
+// ─── SERVICE WORKER ──────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.getRegistrations().then(regs=>{
-    regs.forEach(r=>{
-      r.unregister();
-      console.log('SW unregistered:', r.scope);
-    });
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      // Force immediate update check
+      reg.update();
+    }).catch(()=>{});
   });
-  caches.keys().then(keys=>keys.forEach(k=>caches.delete(k)));
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────
