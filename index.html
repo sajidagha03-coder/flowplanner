@@ -503,7 +503,7 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 
 <script>
 // ─── FORCE UPDATE — version token ───────────────────────────────────────────
-const APP_VERSION = 'v8-haiku';
+const APP_VERSION = 'v9-dynamic';
 if(localStorage.getItem('pa_app_version') !== APP_VERSION){
   // Unregister all old service workers to force fresh load
   if('serviceWorker' in navigator){
@@ -609,6 +609,7 @@ let tasks=load('fp_tasks',[
 ]);
 let adHocMeetings=load('fp_meetings',[]);
 let aiResponse=load('fp_ai','');
+let aiTaskOrder=load('fp_ai_order',[]);  // ordered task IDs from last AI recommendation
 let nextId=load('fp_nextid',200);
 let currentTab='home';
 let planningView='day'; // 'day' | 'week'
@@ -625,11 +626,11 @@ function saveAll(){
 function genId(){return 'id'+(nextId++);}
 
 // ─── DATE/SCHEDULE ENGINE ─────────────────────────────────────────────────
-const TODAY=new Date(2026,4,31);TODAY.setHours(0,0,0,0);
-function todayStr(){return '2026-05-31';}
-// Real current datetime for slot scheduling
+// Always use real device date — never hardcoded
+const TODAY=(function(){const d=new Date();d.setHours(0,0,0,0);return d;})();
+function todayStr(){return TODAY.toISOString().slice(0,10);}
 function realNow(){return new Date();}
-function realTodayMidnight(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function realTodayMidnight(){return TODAY;}
 function daysDiff(ds){return Math.round((new Date(ds)-TODAY)/86400000);}
 function fmtDate(ds){
   // Always show full date: "lun. 2 juin"
@@ -984,6 +985,11 @@ function saveApiKeyFromInput(){
   setTimeout(()=>renderSettings(),1200);
 }
 
+function clearAiOrder(){
+  aiTaskOrder=[];
+  save('fp_ai_order',[]);
+  renderPlanning();
+}
 function clearApiKey(){
   if(confirm('Supprimer la clé API ?')){
     localStorage.removeItem('pa_api_key');
@@ -1011,10 +1017,12 @@ function render(){
 
 // ─── PLANNING ────────────────────────────────────────────────────────────
 function renderPlanning(){
+  const aiOrderActive=aiTaskOrder.length>0;
   let html=`<div class="seg-ctrl">
     <button class="seg-btn ${planningView==='day'?'active':''}" onclick="setPlanView('day')">Aujourd'hui</button>
     <button class="seg-btn ${planningView==='week'?'active':''}" onclick="setPlanView('week')">Cette semaine</button>
-  </div>`;
+  </div>
+  ${aiOrderActive?`<div style="margin:4px 16px 0;padding:7px 12px;background:var(--blue-bg);border-radius:var(--radius-sm);font-size:12px;color:var(--blue-text);display:flex;align-items:center;gap:6px;">🧠 Planning ordonné selon la recommandation IA <span style="margin-left:auto;cursor:pointer;color:var(--text3);" onclick="clearAiOrder()">×</span></div>`:''}`;
   if(planningView==='day') html+=renderDayView(TODAY,true);
   else html+=renderWeekView();
   document.getElementById('screen').innerHTML=html;
@@ -1109,7 +1117,14 @@ function renderWeekView(){
     adHocMeetings.filter(m=>m.date===dStr).forEach(m=>{
       events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60))});
     });
-    const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+    const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>{
+      if(aiTaskOrder.length>0){
+        const ia=aiTaskOrder.indexOf(a.id);const ib=aiTaskOrder.indexOf(b.id);
+        if(ia!==-1&&ib!==-1) return ia-ib;
+        if(ia!==-1) return -1;if(ib!==-1) return 1;
+      }
+      return score(b)-score(a);
+    });
     const used=[];
     myTasks.forEach(t=>{
       const slot=findBestSlot(t);
@@ -1147,6 +1162,10 @@ function renderWeekView(){
 
 // ─── TASKS ───────────────────────────────────────────────────────────────
 function renderTasks(){
+  // Clear stale AI recommendation if no tasks left
+  const myActive=tasks.filter(t=>!t.done&&t.assignedTo==='me');
+  if(myActive.length===0&&aiResponse){aiResponse='';save('fp_ai','');}
+
   let filtered=tasks.filter(t=>{
     if(filterPriority!=='all'&&t.priority!==filterPriority) return false;
     if(filterProject!=='all'&&t.projectId!==filterProject) return false;
@@ -1365,14 +1384,20 @@ async function triggerAI(){
   const dayNames=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
   const summary=active.slice(0,10).map((t,i)=>{
     const sl=fmtSlotPill(findBestSlot(t));
-    return `${i+1}. "${t.title}" (${projById(t.projectId).name}) — ${t.priority}, deadline:${t.deadline}, ${fmtDur(t.duration)}${t.callOk?' [appel voiture ok]':''}, créneau:${sl.label}`;
+    return `${i+1}. [ID:${t.id}] "${t.title}" (${projById(t.projectId).name}) — ${t.priority}, deadline:${t.deadline}, ${fmtDur(t.duration)}${t.callOk?' [appel voiture ok]':''}, créneau:${sl.label}`;
   }).join('\n');
   const teamAlert=tasks.filter(t=>!t.done&&t.assignedTo!=='me'&&daysDiff(t.deadline)<0)
     .map(t=>`"${t.title}" (${memberById(t.assignedTo).name}) retard ${Math.abs(daysDiff(t.deadline))}j`).join(', ');
 
   try{
-    const text=await callAI([{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nDonne un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, et une alerte si quelque chose risque de lui échapper. Tutoie-le. Direct et actionnable.`}],800);
-    aiResponse=text||'Impossible d\'analyser.';
+    const text=await callAI([{role:'user',content:`Tu es l'assistant d'un entrepreneur. ${dayNames[d.getDay()]} ${d.toLocaleDateString('fr-FR')}.\n\nSes tâches (par priorité, avec ID):\n${summary}\n${teamAlert?'\nAlertes équipe: '+teamAlert:''}\n\nRéponds en deux parties séparées par ---:\n1) Un conseil ultra-concret en 4-5 lignes: quoi faire maintenant, dans quel créneau, alerte si besoin. Tutoie. Direct et actionnable.\n2) Les IDs des tâches dans l'ordre recommandé, séparés par des virgules. Ex: t1,t3,t2`}],800);
+    // Parse response — split on ---
+    const parts=(text||'').split('---');
+    aiResponse=(parts[0]||'').trim()||'Impossible d\'analyser.';
+    if(parts[1]){
+      aiTaskOrder=parts[1].trim().split(',').map(s=>s.trim()).filter(Boolean);
+      save('fp_ai_order',aiTaskOrder);
+    }
   }catch(e){
     console.error('AI error:',e);
     if(e.message==='CLE_MANQUANTE'){aiResponse='';switchTab('settings');return;}
@@ -1676,9 +1701,15 @@ function exportMeetingToCalendar(meetingId){
   setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
 }
 
-// ─── SERVICE WORKER ──────────────────────────────────────────────────────
+// ─── SERVICE WORKER — unregister all, no more caching ───────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('./sw.js').catch(()=>{});});
+  navigator.serviceWorker.getRegistrations().then(regs=>{
+    regs.forEach(r=>{
+      r.unregister();
+      console.log('SW unregistered:', r.scope);
+    });
+  });
+  caches.keys().then(keys=>keys.forEach(k=>caches.delete(k)));
 }
 
 // ─── INIT ────────────────────────────────────────────────────────────────
