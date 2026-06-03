@@ -436,6 +436,11 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 
 /* ── MISC ── */
 .empty{text-align:center;padding:56px 24px;color:var(--text2);}
+/* Task status styles */
+.task-card.status-inprogress{opacity:0.85;}
+.task-card.status-inprogress .task-title::before{content:'▶ ';color:var(--blue);font-size:11px;}
+.act-btn.s-inprogress{background:var(--blue-bg);color:var(--blue-text);border-color:transparent;}
+.act-btn.s-closed{background:var(--green-bg);color:var(--green-text);border-color:transparent;}
 .empty-icon{font-size:40px;margin-bottom:12px;}
 .empty-title{font-size:17px;font-weight:500;color:var(--text);margin-bottom:6px;letter-spacing:-0.3px;}
 .empty-sub{font-size:15px;line-height:1.5;letter-spacing:-0.2px;}
@@ -503,7 +508,7 @@ body{background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
 
 <script>
 // ─── FORCE UPDATE — version token ───────────────────────────────────────────
-const APP_VERSION = 'v9-dynamic';
+const APP_VERSION = 'v12-backup';
 if(localStorage.getItem('pa_app_version') !== APP_VERSION){
   // Unregister all old service workers to force fresh load
   if('serviceWorker' in navigator){
@@ -627,8 +632,13 @@ function genId(){return 'id'+(nextId++);}
 
 // ─── DATE/SCHEDULE ENGINE ─────────────────────────────────────────────────
 // Always use real device date — never hardcoded
-const TODAY=(function(){const d=new Date();d.setHours(0,0,0,0);return d;})();
-function todayStr(){return TODAY.toISOString().slice(0,10);}
+// TODAY always reflects real current device date
+function getToday(){const d=new Date();d.setHours(0,0,0,0);return d;}
+const TODAY=getToday(); // used for initial calculations
+function todayStr(){
+  const d=new Date(); // always fresh — never cached
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
 function realNow(){return new Date();}
 function realTodayMidnight(){return TODAY;}
 function daysDiff(ds){return Math.round((new Date(ds)-TODAY)/86400000);}
@@ -754,6 +764,7 @@ function memberById(id){return id==='me'?{name:'Moi',initials:'Moi',color:'#007A
 
 // ─── TAB SWITCH ──────────────────────────────────────────────────────────
 function switchTab(tab){
+  window._filterOverdue=false;
   currentTab=tab;
   viewingMemberId=null;
   filterPriority='all';filterProject='all';filterAssignee='all';
@@ -795,6 +806,28 @@ function updateHeader(){
 }
 
 function backToTeam(){viewingMemberId=null;render();}
+function goToTaskFilter(filter){
+  currentTab='tasks';
+  viewingMemberId=null;
+  filterPriority='all';filterProject='all';filterAssignee='all';
+  document.querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-tasks')?.classList.add('active');
+  document.getElementById('main-header').style.display='flex';
+  // Apply the right filter
+  if(filter==='overdue'){filterAssignee='me';/* handled in render */}
+  else if(filter==='critical'){filterPriority='critical';}
+  else if(filter==='mine'){filterAssignee='me';}
+  else if(filter==='team'){filterAssignee='team';}
+  render();
+  // For overdue, we need a special filter — override after render
+  if(filter==='overdue'){
+    // Mark tasks to show only overdue
+    window._filterOverdue=true;
+    renderTasks();
+  } else {
+    window._filterOverdue=false;
+  }
+}
 
 // ─── MAIN RENDER ────────────────────────────────────────────────────────
 function renderHome(){
@@ -845,21 +878,25 @@ function renderHome(){
 
     <!-- Summary cards -->
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px 16px 8px;">
-      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
-        <div style="font-size:28px;font-weight:700;color:${overdue>0?'var(--red)':' var(--green)'};letter-spacing:-0.5px;">${overdue}</div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;cursor:pointer;active:opacity:0.7;" onclick="goToTaskFilter('overdue')">
+        <div style="font-size:28px;font-weight:700;color:${overdue>0?'var(--red)':'var(--green)'};letter-spacing:-0.5px;">${overdue}</div>
         <div style="font-size:13px;color:var(--text2);margin-top:2px;">En retard</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">Voir →</div>
       </div>
-      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
-        <div style="font-size:28px;font-weight:700;color:${critical>0?'var(--orange)':' var(--green)'};letter-spacing:-0.5px;">${critical}</div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;cursor:pointer;" onclick="goToTaskFilter('critical')">
+        <div style="font-size:28px;font-weight:700;color:${critical>0?'var(--orange)':'var(--green)'};letter-spacing:-0.5px;">${critical}</div>
         <div style="font-size:13px;color:var(--text2);margin-top:2px;">Critiques</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">Voir →</div>
       </div>
-      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('tasks')">
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;cursor:pointer;" onclick="goToTaskFilter('mine')">
         <div style="font-size:28px;font-weight:700;color:var(--brand);letter-spacing:-0.5px;">${myActive.length}</div>
         <div style="font-size:13px;color:var(--text2);margin-top:2px;">Mes tâches</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">Voir →</div>
       </div>
-      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;" onclick="switchTab('team')">
-        <div style="font-size:28px;font-weight:700;color:${teamOv>0?'var(--red)':' var(--green)'};letter-spacing:-0.5px;">${teamOv}</div>
+      <div style="background:var(--bg-card);border-radius:var(--radius);padding:14px 16px;cursor:pointer;" onclick="goToTaskFilter('team')">
+        <div style="font-size:28px;font-weight:700;color:${teamOv>0?'var(--red)':'var(--green)'};letter-spacing:-0.5px;">${teamOv}</div>
         <div style="font-size:13px;color:var(--text2);margin-top:2px;">Équipe en retard</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:4px;">Voir →</div>
       </div>
     </div>
 
@@ -962,6 +999,30 @@ function renderSettings(){
       </div>
     </div>
 
+    <!-- Backup -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Sauvegarde des données</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;border-bottom:0.5px solid var(--border-inner);">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Exporte toutes tes données (tâches, projets, membres) dans un fichier JSON que tu pourras réimporter après une réinstallation.</div>
+        <button class="btn-primary" style="margin-top:0;background:var(--brand);" onclick="exportData()">📤 Exporter mes données</button>
+      </div>
+      <div style="padding:14px 16px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Importe un fichier de sauvegarde. Tes données actuelles seront remplacées.</div>
+        <input type="file" id="import-file" accept=".json" style="display:none;" onchange="importData(event)"/>
+        <button class="btn-secondary" style="margin-top:0;" onclick="document.getElementById('import-file').click()">📥 Importer une sauvegarde</button>
+        <div id="import-result" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- Update -->
+    <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Mise à jour</div>
+    <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 8px;overflow:hidden;">
+      <div style="padding:14px 16px;">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;">Force le rechargement de la dernière version depuis GitHub. Tes données ne seront pas effacées.</div>
+        <button class="btn-primary" style="margin-top:0;background:var(--brand);" onclick="forceUpdate()">🔄 Charger la dernière version</button>
+      </div>
+    </div>
+
     <!-- Reset -->
     <div style="padding:20px 16px 6px;font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.04em;">Zone dangereuse</div>
     <div style="background:var(--bg-card);border-radius:var(--radius);margin:0 16px 24px;overflow:hidden;">
@@ -997,6 +1058,63 @@ function clearApiKey(){
   }
 }
 
+function exportData(){
+  const data={
+    version:'1.0',
+    exportDate:new Date().toISOString(),
+    tasks,projects,members,adHocMeetings,
+    nextId
+  };
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const d=new Date();
+  a.href=url;
+  a.download=`PA-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url);a.remove();},1000);
+}
+
+function importData(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.tasks||!data.projects){
+        document.getElementById('import-result').innerHTML='<div style="color:var(--red);font-size:13px;">Fichier invalide.</div>';
+        return;
+      }
+      tasks=data.tasks||[];
+      projects=data.projects||[];
+      members=data.members||[];
+      adHocMeetings=data.adHocMeetings||[];
+      nextId=data.nextId||200;
+      saveAll();
+      document.getElementById('import-result').innerHTML='<div style="color:var(--green);font-size:13px;">✓ '+tasks.length+' tâches importées avec succès !</div>';
+      setTimeout(()=>render(),1500);
+    }catch(err){
+      document.getElementById('import-result').innerHTML='<div style="color:var(--red);font-size:13px;">Erreur: '+err.message+'</div>';
+    }
+  };
+  reader.readAsText(file);
+}
+
+function forceUpdate(){
+  // Unregister all service workers and clear caches, then reload
+  const doReload = () => window.location.reload(true);
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(regs=>{
+      Promise.all(regs.map(r=>r.unregister())).then(()=>{
+        if('caches' in window){
+          caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k)))).then(doReload);
+        } else { doReload(); }
+      });
+    }).catch(doReload);
+  } else { doReload(); }
+}
 function confirmReset(){
   if(confirm('Supprimer TOUTES les données (tâches, projets, membres) ? Cette action est irréversible.')){
     ['fp_projects','fp_members','fp_tasks','fp_meetings','fp_ai','fp_nextid','fp_install_dismissed'].forEach(k=>localStorage.removeItem(k));
@@ -1051,8 +1169,15 @@ function renderDayView(date,showAddMeeting){
     events.push({time:m.start,end:m.end,type:'meeting',name:`📅 ${m.name}`,sub:fmtDur(Math.round((m.end-m.start)*60)),meetingId:m.id});
   });
 
-  // Scheduled tasks for this day
-  const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>score(b)-score(a));
+  // Scheduled tasks — AI order if available, else by score
+  const myTasks=tasks.filter(t=>!t.done&&t.assignedTo==='me').sort((a,b)=>{
+    if(aiTaskOrder&&aiTaskOrder.length>0){
+      const ia=aiTaskOrder.indexOf(a.id),ib=aiTaskOrder.indexOf(b.id);
+      if(ia!==-1&&ib!==-1) return ia-ib;
+      if(ia!==-1) return -1;if(ib!==-1) return 1;
+    }
+    return score(b)-score(a);
+  });
   // Track used time slots to avoid double-placing
   const usedSlots=[];
   myTasks.forEach(t=>{
@@ -1079,7 +1204,10 @@ function renderDayView(date,showAddMeeting){
     const barColor=ev.type==='drive'?'var(--orange)':ev.type==='meeting'?'var(--red)':
       ev.priority==='critical'?'var(--red)':ev.priority==='high'?'var(--orange)':
       ev.priority==='medium'?'var(--blue)':'var(--green)';
-    const del=ev.meetingId?`<span style="color:var(--text3);cursor:pointer;padding:0 4px;font-size:18px;" onclick="deleteMeeting('${ev.meetingId}')">×</span>`:'';
+    const del=ev.meetingId?`<div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;">
+        <span style="font-size:12px;color:var(--blue);cursor:pointer;padding:2px 6px;text-align:center;" onclick="editMeeting('${ev.meetingId}')">✏️</span>
+        <span style="font-size:12px;color:var(--text3);cursor:pointer;padding:2px 6px;text-align:center;" onclick="deleteMeeting('${ev.meetingId}')">🗑</span>
+      </div>`:'';
     html+=`<div class="tl-row">
       <div class="tl-time">${fmtH(ev.time)}</div>
       <div class="tl-dot" style="background:${barColor}"></div>
@@ -1173,7 +1301,9 @@ function renderTasks(){
     if(filterAssignee==='team'&&t.assignedTo==='me') return false;
     return true;
   });
-  const active=filtered.filter(t=>!t.done).sort((a,b)=>score(b)-score(a));
+  let active=filtered.filter(t=>!t.done);
+  if(window._filterOverdue) active=active.filter(t=>daysDiff(t.deadline)<0);
+  active=active.sort((a,b)=>score(b)-score(a));
   const done=filtered.filter(t=>t.done);
 
   const allActive=tasks.filter(t=>!t.done);
@@ -1229,7 +1359,8 @@ function renderTaskRow(t){
   const dlLabel=fmtDate(t.deadline);
   const pLabels={critical:'🔴 Critique',high:'🟠 Haute',medium:'🔵 Moyenne',low:'🟢 Basse'};
 
-  return `<div class="task-card p-${t.priority}" onclick="openTaskModal('${t.id}')">
+  const inProgress=t.status==='inprogress';
+  return `<div class="task-card p-${t.priority}${inProgress?' status-inprogress':''}" onclick="openTaskModal('${t.id}')" style="${inProgress?'border-top:2px solid var(--blue);':''}">
     <div class="task-top">
       <div class="task-check ${t.done?'done':''}" onclick="event.stopPropagation();toggleDone('${t.id}')">
         <svg viewBox="0 0 12 12" fill="none"><polyline points="2,6 5,9 10,3"/></svg>
@@ -1248,10 +1379,10 @@ function renderTaskRow(t){
       <span class="tag ${sl.cls}">📅 ${sl.label}</span>
     </div>
     <div class="task-actions" onclick="event.stopPropagation()">
-      <button class="act-btn ${t.status==='done'?'s-done':''}" onclick="setStatus('${t.id}','done')">✓ Fait</button>
+      <button class="act-btn ${t.status==='inprogress'?'s-inprogress':''}" onclick="setStatus('${t.id}','inprogress')">▶ En cours</button>
       <button class="act-btn ${t.status==='deferred'?'s-defer':''}" onclick="setStatus('${t.id}','deferred')">↷ Reporter</button>
       <button class="act-btn ${t.status==='more-time'?'s-more':''}" onclick="setStatus('${t.id}','more-time')">⏱ + Temps</button>
-      <button class="act-btn" onclick="exportToCalendar('${t.id}')" style="color:var(--brand);">📅</button>
+      <button class="act-btn s-closed" onclick="setStatus('${t.id}','closed')">✓ Clôturé</button>
     </div>
   </div>`;
 }
@@ -1268,8 +1399,11 @@ function toggleDone(id){
 }
 function setStatus(id,status){
   const t=tasks.find(x=>x.id===id);if(!t) return;
+  // Toggle off if already active
+  if(t.status===status&&status!=='closed'){t.status='todo';saveAll();render();return;}
   t.status=status;
-  if(status==='done'){t.done=true;}
+  if(status==='closed'){t.done=true;}
+  else if(status==='inprogress'){t.done=false;}
   else if(status==='deferred'){const d=new Date(t.deadline);d.setDate(d.getDate()+2);t.deadline=d.toISOString().slice(0,10);t.done=false;}
   else if(status==='more-time'){t.duration=Math.round(t.duration*1.5);t.done=false;}
   saveAll();render();
@@ -1625,6 +1759,36 @@ function deleteMeeting(id){
   adHocMeetings=adHocMeetings.filter(m=>m.id!==id);
   saveAll();renderPlanning();
 }
+function editMeeting(id){
+  const m=adHocMeetings.find(x=>x.id===id);
+  if(!m) return;
+  const sH=Math.floor(m.start),sM=Math.round((m.start-sH)*60);
+  const eH=Math.floor(m.end),eM=Math.round((m.end-eH)*60);
+  openSheet('Modifier la réunion',`
+    <div class="form-field"><label class="form-label">Sujet</label><input class="form-input" id="mt-name" value="${m.name}"/></div>
+    <div class="form-field"><label class="form-label">Date</label><input class="form-input" type="date" id="mt-date" value="${m.date}"/></div>
+    <div class="form-row2">
+      <div class="form-field"><label class="form-label">Début</label><input class="form-input" type="time" id="mt-start" value="${String(sH).padStart(2,'0')}:${String(sM).padStart(2,'0')}"/></div>
+      <div class="form-field"><label class="form-label">Fin</label><input class="form-input" type="time" id="mt-end" value="${String(eH).padStart(2,'0')}:${String(eM).padStart(2,'0')}"/></div>
+    </div>
+    <div id="mt-impact" style="margin-bottom:10px;"></div>
+    <button class="btn-primary" onclick="updateMeeting('${id}')">💾 Enregistrer</button>
+    <button class="btn-danger" onclick="deleteMeeting('${id}');closeSheet()">🗑 Supprimer</button>
+    <button class="btn-secondary" onclick="closeSheet()">Annuler</button>
+  `);
+  ['mt-start','mt-end','mt-date'].forEach(id=>document.getElementById(id)?.addEventListener('change',previewImpact));
+}
+function updateMeeting(id){
+  const m=adHocMeetings.find(x=>x.id===id);if(!m) return;
+  const name=document.getElementById('mt-name').value.trim();
+  const date=document.getElementById('mt-date').value;
+  const sv=document.getElementById('mt-start').value;
+  const ev=document.getElementById('mt-end').value;
+  if(!name||!date||!sv||!ev) return;
+  const[sh,sm]=sv.split(':').map(Number);const[eh,em]=ev.split(':').map(Number);
+  Object.assign(m,{name,date,start:sh+sm/60,end:eh+em/60});
+  saveAll();closeSheet();renderPlanning();
+}
 
 
 // ─── CALENDAR EXPORT (.ics) ──────────────────────────────────────────────
@@ -1703,11 +1867,21 @@ function exportMeetingToCalendar(meetingId){
 
 // ─── SERVICE WORKER ──────────────────────────────────────────────────────
 if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
-      // Force immediate update check
+  // Listen for force-reload message from new SW
+  navigator.serviceWorker.addEventListener('message', e => {
+    if(e.data && e.data.type === 'FORCE_RELOAD'){
+      window.location.reload(true);
+    }
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      // Check for updates every time app loads
       reg.update();
-    }).catch(()=>{});
+      // Also check when app comes back to foreground
+      document.addEventListener('visibilitychange', () => {
+        if(document.visibilityState === 'visible') reg.update();
+      });
+    }).catch(() => {});
   });
 }
 

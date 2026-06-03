@@ -1,40 +1,36 @@
-// Smart SW — never caches HTML (always fresh), caches only static assets
-const CACHE = 'pa-assets-v9';
-const ASSETS = ['./icon-192.png', './icon-512.png', './apple-touch-icon.png', './manifest.json'];
+// v12 — self-updating service worker
+// When this SW activates, it clears ALL caches and forces clients to reload
+const CACHE = 'pa-v12';
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
-  self.skipWaiting();
+  self.skipWaiting(); // activate immediately
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    caches.keys()
+      .then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => {
+        // Tell ALL open clients to reload
+        return self.clients.matchAll({type:'window', includeUncontrolled:true});
+      })
+      .then(clients => {
+        clients.forEach(client => {
+          client.postMessage({type:'FORCE_RELOAD'});
+        });
+        return self.clients.claim();
+      })
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', e => {
-  const url = new URL(e.request.url);
-  
-  // HTML and JS — ALWAYS network, never cache
-  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname.endsWith('/')) {
-    e.respondWith(
-      fetch(e.request, { cache: 'no-store' })
-        .catch(() => caches.match('./icon-192.png')) // offline fallback
-    );
+  // HTML + JS = always network, never cache
+  if(e.request.url.includes('.html') || e.request.url.includes('.js') || e.request.url.endsWith('/')) {
+    e.respondWith(fetch(e.request, {cache:'no-store'}).catch(() => caches.match(e.request)));
     return;
   }
-  
-  // Static assets — cache first
+  // Assets = cache first
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      return cached || fetch(e.request).then(res => {
-        caches.open(CACHE).then(c => c.put(e.request, res.clone()));
-        return res;
-      });
-    })
+    caches.match(e.request).then(cached => cached || fetch(e.request))
   );
 });
